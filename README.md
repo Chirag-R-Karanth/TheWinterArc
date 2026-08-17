@@ -1,4 +1,4 @@
-# Winterarc
+# TheWinterArc
 
 > **Build in silence. Become something different.**
 
