@@ -1,10 +1,13 @@
 package com.winterarc.companion
 
 import android.content.Context
+import androidx.health.connect.client.HealthConnectClient
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -29,7 +32,7 @@ class SyncWorker(
         val fromMs = Prefs.lastSyncMs
         val now = System.currentTimeMillis()
 
-        if (HealthRead.sdkStatus(applicationContext) != HealthConnectSdkAvailable) {
+        if (HealthRead.sdkStatus(applicationContext) != HealthConnectClient.SDK_AVAILABLE) {
             return Result.retry()
         }
 
@@ -52,8 +55,6 @@ class SyncWorker(
         return if (anyFail) Result.retry() else Result.success()
     }
 
-    private val HealthConnectSdkAvailable = 2 // HealthConnectClient.SDK_AVAILABLE
-
     companion object {
         private const val unique = "winterarc-sync"
 
@@ -72,8 +73,8 @@ class SyncWorker(
 
         fun runNow(ctx: Context) {
             WorkManager.getInstance(ctx)
-                .enqueueUniqueWork(unique + "-now", ExistingPeriodicWorkPolicy.KEEP,
-                    PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.HOURS).build())
+                .enqueueUniqueWork(unique + "-now", ExistingWorkPolicy.KEEP,
+                    OneTimeWorkRequestBuilder<SyncWorker>().build())
         }
     }
 }

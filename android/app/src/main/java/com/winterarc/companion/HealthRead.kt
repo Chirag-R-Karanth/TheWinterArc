@@ -2,14 +2,13 @@ package com.winterarc.companion
 
 import android.content.Context
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
-import androidx.health.connect.client.aggregate.Aggregate
-import androidx.health.connect.client.aggregate.AggregateRequest
+import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.request.AggregateRequest.Companion.between
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Instant
@@ -23,16 +22,15 @@ object HealthRead {
 
     private const val TAG = "HealthRead"
 
-    val permissionSet = setOf(
-        androidx.health.connect.client.permission.health.PermissionId(StepsRecord::class),
-        androidx.health.connect.client.permission.health.PermissionId(HeartRateRecord::class),
-        androidx.health.connect.client.permission.health.PermissionId(SleepSessionRecord::class),
+    val permissionSet: Set<String> = setOf(
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
     )
 
-    fun sdkStatus(ctx: Context): Int =
-        HealthConnectClient.getSdkStatus(ctx, "com.google.android.apps.healthdata")
+    fun sdkStatus(ctx: Context): Int = HealthConnectClient.sdkStatus(ctx)
 
-    fun permissionRequest(): androidx.activity.result.ActivityResultContract<Set<String>, Set<String>> =
+    fun permissionRequest(): ActivityResultContract<Set<String>, Set<String>> =
         PermissionController.createRequestPermissionResultContract()
 
     suspend fun read(ctx: Context, fromMs: Long, toMs: Long): List<QueueStore.Pending> {
@@ -40,22 +38,20 @@ object HealthRead {
         val out = mutableListOf<QueueStore.Pending>()
         val from = Instant.ofEpochMilli(fromMs)
         val to = Instant.ofEpochMilli(toMs)
+        val window = TimeRangeFilter.between(from, to)
 
-        // Steps: single aggregated total for the window (keeps payloads small).
-        val agg = client.aggregate(
-            AggregateRequest.between(
-                metrics = setOf(Aggregate.STEPS_TOTAL),
-                recordTypes = setOf(StepsRecord::class),
-                timeRangeFilter = TimeRangeFilter.between(from, to),
-            )
+        // Steps: raw records summed in-app (1.0.0-alpha11 ships no aggregate/metric constants).
+        val steps = client.readRecords(
+            ReadRecordsRequest(recordType = StepsRecord::class, timeRangeFilter = window)
         )
-        agg[Aggregate.STEPS_TOTAL]?.let { total ->
+        val total = steps.records.sumOf { it.count }
+        if (total > 0) {
             out += QueueStore.Pending(
                 id = 0,
                 source = "healthconnect",
-                sourceKey = "hc_steps_${from.toEpochMilli()}_${to.toEpochMilli()}",
+                sourceKey = "hc_steps_${fromMs}_${toMs}",
                 metricType = "steps",
-                value = total.toDouble(), // Long count
+                value = total.toDouble(),
                 unit = "steps",
                 tsStart = fromMs,
                 tsEnd = toMs,
@@ -89,13 +85,13 @@ object HealthRead {
             )
         )
         for (rec in sleep.records) {
-            val totalSeconds = rec.stages.sumOf { it.duration.toMillis() }.toDouble() / 1000.0
+            val hours = (rec.endTime.toEpochMilli() - rec.startTime.toEpochMilli()) / 3600_000.0
             out += QueueStore.Pending(
                 id = 0,
                 source = "healthconnect",
                 sourceKey = "hc_sleep_${rec.metadata.id}",
                 metricType = "sleep",
-                value = totalSeconds / 3600.0,
+                value = hours,
                 unit = "h",
                 tsStart = rec.startTime.toEpochMilli(),
                 tsEnd = rec.endTime.toEpochMilli(),

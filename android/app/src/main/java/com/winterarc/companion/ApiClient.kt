@@ -41,7 +41,7 @@ object ApiClient {
             .url("$url/api/v1/metrics")
             .header("X-API-Key", Prefs.apiKey)
             .header("Content-Type", "application/json")
-            .post(body.toString().toRequestBody(JSON.toMediaType()))
+            .post(body.toString().toRequestBody(JSON))
             .build()
 
         return try {
