@@ -41,7 +41,7 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     // Health Connect SDK (on-device biometrics source)
-    implementation("androidx.health.connect:connect-client:1.1.0")
+    implementation("androidx.health.connect:connect-client:1.0.0")
 
     // Background scheduling
     implementation("androidx.work:work-runtime-ktx:2.10.0")
