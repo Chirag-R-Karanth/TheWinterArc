@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Save & sync now" />
+            android:text="Save &amp; sync now" />
 
         <Button
             android:id="@+id/permissionBtn"
