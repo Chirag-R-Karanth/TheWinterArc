@@ -1,0 +1,64 @@
+{{define "overview.html"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<section class="hero">
+  <h1>Today</h1>
+  <p class="hero-sub" id="hero-sub">Loading…</p>
+</section>
+
+<section class="card-grid" id="card-grid" aria-busy="true">
+  <div class="stat-card" data-card="calories">
+    <span class="stat-label">Calories</span>
+    <span class="stat-value">—</span>
+    <span class="stat-unit">kcal</span>
+    <svg class="stat-spark" data-spark="calories"></svg>
+    <a class="stat-link" href="/trends/nutrition">Trend →</a>
+  </div>
+  <div class="stat-card accent-recovery" data-card="sleep">
+    <span class="stat-label">Sleep</span>
+    <span class="stat-value">—</span>
+    <span class="stat-unit">last night</span>
+    <svg class="stat-spark" data-spark="sleep"></svg>
+    <a class="stat-link" href="/trends/recovery">Trend →</a>
+  </div>
+  <div class="stat-card accent-training" data-card="steps">
+    <span class="stat-label">Steps</span>
+    <span class="stat-value">—</span>
+    <span class="stat-unit">today</span>
+    <svg class="stat-spark" data-spark="steps"></svg>
+    <a class="stat-link" href="/trends/recovery">Trend →</a>
+  </div>
+  <div class="stat-card accent-cardio" data-card="strain">
+    <span class="stat-label">Strain</span>
+    <span class="stat-value">—</span>
+    <span class="stat-unit">7-day load</span>
+    <svg class="stat-spark" data-spark="strain"></svg>
+    <a class="stat-link" href="/trends/training">Trend →</a>
+  </div>
+  <div class="stat-card accent-mental" data-card="mood">
+    <span class="stat-label">Mood</span>
+    <span class="stat-value">—</span>
+    <span class="stat-unit">today</span>
+    <svg class="stat-spark" data-spark="mood"></svg>
+    <a class="stat-link" href="/trends/mental">Trend →</a>
+  </div>
+  <div class="stat-card accent-flex" data-card="weight">
+    <span class="stat-label">Weight</span>
+    <span class="stat-value">—</span>
+    <span class="stat-unit">latest</span>
+    <svg class="stat-spark" data-spark="weight"></svg>
+    <a class="stat-link" href="/trends/nutrition">Trend →</a>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Last workout</h2>
+  <div id="last-workout">
+    <p class="empty">No workouts recorded yet.</p>
+  </div>
+</section>
+{{end}}
+
+{{define "page_scripts"}}
+<script src="/static/js/overview.js" defer></script>
+{{end}}

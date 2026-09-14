@@ -1,0 +1,26 @@
+{{define "trends.html"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<section class="hero">
+  <h1 class="category-title" id="category-title">—</h1>
+  <p class="hero-sub" id="trend-sub"></p>
+</section>
+
+<div class="toolbar" id="toolbar">
+  <select id="range" class="select">
+    <option value="30">Last 30 days</option>
+    <option value="90" selected>Last 90 days</option>
+    <option value="365">Last year</option>
+  </select>
+  <span class="toolbar-spacer"></span>
+  <span id="source-ok" class="badge"></span>
+</div>
+
+<div class="chart-stack" id="chart-stack" aria-busy="true">
+  <p class="empty">Loading charts…</p>
+</div>
+{{end}}
+
+{{define "page_scripts"}}
+<script src="/static/js/trends.js" defer></script>
+{{end}}
