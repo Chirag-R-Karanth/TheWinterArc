@@ -20,9 +20,6 @@ type Config struct {
 	PlumberURL   string
 	SyncInterval time.Duration
 
-	StravaClientID     string
-	StravaClientSecret string
-
 	FatSecretKey    string
 	FatSecretSecret string
 }
@@ -41,9 +38,6 @@ func Load() *Config {
 
 		PlumberURL:   getStr("WINTERARC_PLUMBER_URL", "http://localhost:8002"),
 		SyncInterval: getDur("WINTERARC_SYNC_INTERVAL", time.Hour),
-
-		StravaClientID:     getStr("STRAVA_CLIENT_ID", ""),
-		StravaClientSecret: getStr("STRAVA_CLIENT_SECRET", ""),
 
 		FatSecretKey:    getStr("FATSECRET_KEY", ""),
 		FatSecretSecret: getStr("FATSECRET_SECRET", ""),

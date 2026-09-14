@@ -17,7 +17,6 @@ import (
 	"winterarc/internal/plumber"
 	"winterarc/internal/sources"
 	"winterarc/internal/sources/fatsecret"
-	"winterarc/internal/sources/strava"
 	"winterarc/internal/sync"
 	"winterarc/internal/web"
 )
@@ -46,8 +45,6 @@ func main() {
 	store := ingest.NewStore(pg.Pool)
 	mgr := sync.NewManager(pg.Pool, cfg.SyncInterval, log)
 
-	stravaClient := strava.New(pg.Pool, store, cfg)
-	mgr.Register(stravaClient)
 	mgr.Register(fatsecret.New(pg.Pool, store, cfg.FatSecretKey, cfg.FatSecretSecret))
 	mgr.Register(sources.UnconfiguredProvider("lyfta"))
 	mgr.Register(sources.UnconfiguredProvider("bend"))
@@ -62,7 +59,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := api.New(cfg, pg, store, mgr, plumb, stravaClient, ui.Routes())
+	srv := api.New(cfg, pg, store, mgr, plumb, ui.Routes())
 
 	httpServer := &http.Server{
 		Addr:              cfg.ListenAddr,

@@ -27,7 +27,6 @@ var primarySource = map[string]string{
 	"protein":          "fatsecret",
 	"fat":              "fatsecret",
 	"workout_strength": "lyfta",
-	"workout_cardio":   "strava",
 	"workout_flex":     "bend",
 	"mood":             "howwefeel",
 }

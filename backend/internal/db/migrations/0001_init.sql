@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS source_health (
 );
 
 INSERT INTO source_health (source, token_status)
-VALUES ('strava', 'unconfigured'), ('fatsecret', 'unconfigured'),
+VALUES ('fatsecret', 'unconfigured'),
        ('lyfta', 'unconfigured'), ('bend', 'unconfigured'),
        ('howwefeel', 'unconfigured'), ('healthconnect', 'unconfigured')
 ON CONFLICT (source) DO NOTHING;

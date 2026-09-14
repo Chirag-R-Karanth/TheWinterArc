@@ -12,7 +12,6 @@ import (
 	"winterarc/internal/db"
 	"winterarc/internal/ingest"
 	"winterarc/internal/plumber"
-	"winterarc/internal/sources/strava"
 	"winterarc/internal/sync"
 )
 
@@ -22,7 +21,6 @@ type Server struct {
 	store  *ingest.Store
 	sync   *sync.Manager
 	plumb  *plumber.Client
-	strava *strava.Client
 	router http.Handler
 }
 
@@ -32,7 +30,6 @@ func New(
 	store *ingest.Store,
 	mgr *sync.Manager,
 	plumb *plumber.Client,
-	stravaClient *strava.Client,
 	ui http.Handler,
 ) *Server {
 	s := &Server{
@@ -41,7 +38,6 @@ func New(
 		store:  store,
 		sync:   mgr,
 		plumb:  plumb,
-		strava: stravaClient,
 	}
 	s.router = s.routes(ui)
 	return s
@@ -68,14 +64,7 @@ func (s *Server) routes(ui http.Handler) http.Handler {
 	api.Post("/correlations/run", s.handleCorrelate)
 	api.Get("/activities", s.handleListActivities)
 
-	// Browser OAuth flow: mounted outside the API-key gate. It is still
-	// protected at the edge by Caddy basic auth in the deployed topology.
-	oauth := chi.NewRouter()
-	oauth.Get("/strava/start", s.handleStravaOAuthStart)
-	oauth.Get("/strava/callback", s.handleStravaOAuthCallback)
-
 	r.Mount("/api/v1", api)
-	r.Mount("/api/v1/oauth", oauth)
 	r.Mount("/", ui)
 	return r
 }
