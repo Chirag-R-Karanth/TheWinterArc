@@ -37,8 +37,8 @@ services:
       FATSECRET_KEY: ${FATSECRET_KEY}
       FATSECRET_SECRET: ${FATSECRET_SECRET}
       WINTERARC_SYNC_INTERVAL: ${WINTERARC_SYNC_INTERVAL:-1h}
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
 
   analysis:
     build: ./analysis
