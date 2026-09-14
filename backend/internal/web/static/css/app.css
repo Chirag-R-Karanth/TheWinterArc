@@ -1,0 +1,290 @@
+/* Catppuccin Macchiato */
+:root {
+  --base: #24273a;
+  --mantle: #1e2030;
+  --crust: #181926;
+  --text: #cad3f5;
+  --subtext1: #b8c0e0;
+  --subtext0: #a5adcb;
+  --overlay2: #939ab7;
+  --overlay1: #8087a2;
+  --overlay0: #6e738d;
+  --surface2: #5b6078;
+  --surface1: #494d64;
+  --surface0: #363a4f;
+
+  --blue: #8aadf4;
+  --lavender: #b7bdf8;
+  --sapphire: #7dc4e4;
+  --sky: #91d7e3;
+  --teal: #8bd5ca;
+  --green: #a6da95;
+  --yellow: #eed49f;
+  --peach: #f5a97f;
+  --maroon: #ee99a0;
+  --red: #ed8796;
+  --mauve: #c6a0f6;
+  --pink: #f5bde6;
+  --flamingo: #f0c6c6;
+  --rosewater: #f4dbd6;
+
+  --accent-training: var(--mauve);
+  --accent-cardio: var(--blue);
+  --accent-nutrition: var(--yellow);
+  --accent-recovery: var(--teal);
+  --accent-mental: var(--pink);
+  --accent-flexibility: var(--green);
+  --accent-default: var(--lavender);
+
+  --radius: 12px;
+  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--crust);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- header ---------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1.5rem;
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface0);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+.brand:hover { text-decoration: none; }
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--mauve), var(--blue));
+  color: var(--base);
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.main-nav a {
+  color: var(--subtext0);
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.main-nav a:hover {
+  color: var(--text);
+  background: var(--surface0);
+  text-decoration: none;
+}
+.main-nav a.active {
+  color: var(--base);
+  background: var(--accent-default);
+  font-weight: 600;
+}
+
+/* accent per category for the active nav + headings */
+html[data-category="training"] .main-nav a.active { background: var(--accent-training); }
+html[data-category="cardio"] .main-nav a.active { background: var(--accent-cardio); }
+html[data-category="nutrition"] .main-nav a.active { background: var(--accent-nutrition); }
+html[data-category="recovery"] .main-nav a.active { background: var(--accent-recovery); }
+html[data-category="mental"] .main-nav a.active { background: var(--accent-mental); }
+html[data-category="flexibility"] .main-nav a.active { background: var(--accent-flexibility); }
+
+.category-title::before {
+  content: "";
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-right: 0.55rem;
+  border-radius: 3px;
+  background: var(--accent-default);
+}
+html[data-category="training"] .category-title::before { background: var(--accent-training); }
+html[data-category="cardio"] .category-title::before { background: var(--accent-cardio); }
+html[data-category="nutrition"] .category-title::before { background: var(--accent-nutrition); }
+html[data-category="recovery"] .category-title::before { background: var(--accent-recovery); }
+html[data-category="mental"] .category-title::before { background: var(--accent-mental); }
+html[data-category="flexibility"] .category-title::before { background: var(--accent-flexibility); }
+
+/* ---------- sync strip ---------- */
+.sync-strip {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--overlay0);
+}
+.sync-label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.7rem; }
+.sync-dots { display: flex; gap: 0.3rem; }
+.sync-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface2);
+}
+.sync-dot.status-ok { background: var(--green); }
+.sync-dot.status-expired, .sync-dot.status-revoked,
+.sync-dot.status-missing, .sync-dot.status-error { background: var(--red); }
+.sync-dot.status-unconfigured { background: var(--overlay0); opacity: 0.55; }
+.sync-meta { font-variant-numeric: tabular-nums; max-width: 16rem; }
+
+/* ---------- layout ---------- */
+.content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.6rem 1.5rem 3rem;
+}
+
+.hero { margin-bottom: 1.4rem; }
+.hero h1 { margin: 0 0 0.2rem; font-size: 1.7rem; font-weight: 700; }
+.hero-sub { margin: 0; color: var(--subtext0); }
+
+.panel {
+  background: var(--base);
+  border: 1px solid var(--surface0);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+  margin-top: 1.2rem;
+}
+.panel h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1rem;
+  color: var(--subtext1);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.empty { color: var(--overlay1); }
+
+/* ---------- stat cards ---------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.9rem;
+}
+.stat-card {
+  background: var(--base);
+  border: 1px solid var(--surface0);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-top: 3px solid var(--accent-default);
+}
+.stat-card.accent-training { border-top-color: var(--accent-training); }
+.stat-card.accent-cardio { border-top-color: var(--accent-cardio); }
+.stat-card.accent-nutrition { border-top-color: var(--accent-nutrition); }
+.stat-card.accent-recovery { border-top-color: var(--accent-recovery); }
+.stat-card.accent-mental { border-top-color: var(--accent-mental); }
+.stat-card.accent-flex { border-top-color: var(--accent-flexibility); }
+
+.stat-label { color: var(--subtext0); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-value { font-size: 1.9rem; font-weight: 750; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat-unit { color: var(--overlay1); font-size: 0.78rem; }
+.stat-spark { width: 100%; height: 34px; margin-top: 0.3rem; }
+.stat-link { font-size: 0.78rem; margin-top: 0.3rem; }
+
+/* ---------- charts ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.toolbar-spacer { flex: 1; }
+.select, .btn {
+  background: var(--surface0);
+  color: var(--text);
+  border: 1px solid var(--surface1);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.86rem;
+  font-family: inherit;
+}
+.btn { cursor: pointer; transition: background 0.12s ease; }
+.btn:hover { background: var(--surface1); }
+
+.badge {
+  font-size: 0.78rem;
+  color: var(--subtext0);
+  background: var(--surface0);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+}
+
+.chart-stack { display: flex; flex-direction: column; gap: 1.2rem; }
+
+.chart-card {
+  background: var(--base);
+  border: 1px solid var(--surface0);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+.chart-card h3 { margin: 0 0 0.6rem; font-size: 0.95rem; color: var(--subtext1); }
+.chart-card .chart { width: 100%; }
+.chart-card .chart svg { display: block; }
+
+.plot-fallback { color: var(--overlay1); font-size: 0.85rem; padding: 1rem 0; }
+
+/* map */
+#route-map { height: 380px; border-radius: 8px; background: var(--mantle); }
+.map-toolbar { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; }
+
+/* correlations */
+.row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
+.col { display: flex; flex-direction: column; gap: 0.3rem; }
+.col label { font-size: 0.75rem; color: var(--subtext0); text-transform: uppercase; letter-spacing: 0.05em; }
+.col-btn { margin-left: auto; }
+.corr-status { margin-top: 0.8rem; font-size: 0.85rem; color: var(--overlay1); }
+.corr-status.error { color: var(--red); }
+
+/* footer */
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  color: var(--overlay0);
+  font-size: 0.78rem;
+  padding: 1rem 1.5rem 2rem;
+}
+
+/* responsive */
+@media (max-width: 700px) {
+  .site-header { gap: 0.7rem; }
+  .sync-strip { width: 100%; margin-left: 0; order: 4; }
+  .content { padding: 1.1rem 1rem 2.5rem; }
+  .stat-value { font-size: 1.6rem; }
+}
