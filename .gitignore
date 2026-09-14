@@ -4,6 +4,7 @@
 
 # env / secrets
 .env
+/secrets/
 
 # go
 backend/bin/
