@@ -1,0 +1,22 @@
+# data
+/data/
+*.db
+
+# env / secrets
+.env
+
+# go
+backend/bin/
+backend/winterarc
+backend/coverage.out
+
+# android
+android/.gradle/
+android/local.properties
+android/app/build/
+android/build/
+
+# editor
+.idea/
+.vscode/
+*.iml
