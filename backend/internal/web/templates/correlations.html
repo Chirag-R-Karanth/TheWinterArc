@@ -1,0 +1,41 @@
+{{define "correlations.html"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<section class="hero">
+  <h1>Correlations</h1>
+  <p class="hero-sub">Precomputed by the R analysis service. If R is down, these simply stay stale — the dashboard keeps working.</p>
+</section>
+
+<section class="panel">
+  <div class="row">
+    <div class="col">
+      <label>X metric</label>
+      <select id="x-metric" class="select">
+        <option value="sleep">Sleep (h)</option>
+        <option value="steps">Steps</option>
+        <option value="workout_duration">Training volume (s)</option>
+        <option value="mood">Mood</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Y metric</label>
+      <select id="y-metric" class="select">
+        <option value="workout_cardio">Cardio distance (m)</option>
+        <option value="workout_duration">Training volume (s)</option>
+        <option value="mood">Mood</option>
+        <option value="calories">Calories</option>
+      </select>
+    </div>
+    <div class="col col-btn">
+      <button id="compute-btn" class="btn">Compute with R</button>
+    </div>
+  </div>
+  <div id="corr-status" class="corr-status"></div>
+</section>
+
+<div class="chart-stack" id="corr-charts"></div>
+{{end}}
+
+{{define "page_scripts"}}
+<script src="/static/js/correlations.js" defer></script>
+{{end}}
