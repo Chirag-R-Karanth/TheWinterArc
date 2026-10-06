@@ -1,0 +1,201 @@
+/* ==========================================================================
+   WINTERARC — DESIGN TOKENS
+   Light  : silver hardware / frosted white / charcoal ink
+   Dark   : graphite / blackened silver / cool grey
+   ========================================================================== */
+
+:root {
+  /* ---- typography ---- */
+  --font-sans: "Inter", "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-num: "Inter", -apple-system, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+
+  --fs-metric-xl: 3.25rem;   /* 52px — hero numbers */
+  --fs-metric-lg: 2.35rem;   /* 37.6px */
+  --fs-metric-md: 1.75rem;   /* 28px */
+  --fs-metric-sm: 1.25rem;   /* 20px */
+  --fs-h1: 1.75rem;
+  --fs-h2: 1.3rem;
+  --fs-h3: 1.05rem;
+  --fs-body: 0.9rem;
+  --fs-sm: 0.8125rem;
+  --fs-xs: 0.72rem;
+  --fs-2xs: 0.66rem;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+  --fw-bold: 680;
+
+  --tracking-label: 0.09em;
+  --tracking-tight: -0.02em;
+
+  /* ---- spacing scale ---- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+  --s-9: 56px;
+
+  /* ---- radii ---- */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+  --r-2xl: 30px;
+  --r-pill: 999px;
+
+  /* ---- layout ---- */
+  --sidebar-w: 216px;
+  --sidebar-w-compact: 76px;
+  --topbar-h: 68px;
+  --content-max: 1680px;
+  --content-pad-x: 34px;
+
+  /* ---- motion ---- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-1: 160ms;
+  --dur-2: 300ms;
+  --dur-3: 520ms;
+  --dur-4: 800ms;
+
+  /* ---- z ---- */
+  --z-sidebar: 40;
+  --z-topbar: 30;
+  --z-tooltip: 90;
+  --z-overlay: 100;
+}
+
+/* ==========================================================================
+   LIGHT THEME — polished silver / white hardware
+   ========================================================================== */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --env: #e4e6ea;                 /* silver environment */
+  --env-2: #dcdee3;
+  --surface: #fafbfc;             /* almost-white application surface */
+  --surface-2: #f3f4f6;
+  --card: #ffffff;                /* card plane */
+  --card-soft: #f2f3f5;           /* soft grey nested module */
+  --well: #f6f7f9;                /* inset chart well */
+  --well-2: #eceef1;
+  --rail: #1c1e22;                /* dark navigation rail */
+  --rail-hover: #26282d;
+  --rail-text: rgba(255, 255, 255, 0.56);
+  --rail-text-active: #ffffff;
+
+  --text: #14161a;
+  --text-2: #5b616b;
+  --text-3: #8d939d;
+  --text-4: #b3b8c0;
+  --text-invert: #f4f5f7;
+
+  --hairline: rgba(20, 22, 26, 0.07);
+  --hairline-strong: rgba(20, 22, 26, 0.12);
+  --track: #e8eaee;
+
+  --accent: #e8660f;              /* restrained orange */
+  --accent-2: #ff8a3d;
+  --accent-soft: rgba(232, 102, 15, 0.12);
+  --accent-ink: #b34f08;
+
+  --c-activity: #4a76d8;
+  --c-activity-soft: rgba(74, 118, 216, 0.13);
+  --c-recovery: #38956a;
+  --c-recovery-soft: rgba(56, 149, 106, 0.13);
+  --c-sleep: #5566c9;
+  --c-sleep-soft: rgba(85, 102, 201, 0.13);
+  --c-mind: #7e64c9;
+  --c-mind-soft: rgba(126, 100, 201, 0.13);
+  --c-nutrition: #d98324;
+  --c-nutrition-soft: rgba(217, 131, 36, 0.14);
+  --c-body: #2f9490;
+  --c-body-soft: rgba(47, 148, 144, 0.13);
+  --c-danger: #c8503f;
+  --c-danger-soft: rgba(200, 80, 63, 0.12);
+  --c-positive: #38956a;
+
+  --grid-line: rgba(20, 22, 26, 0.06);
+  --chart-label: #8d939d;
+
+  --sh-1: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --sh-2: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 26px -18px rgba(16, 24, 40, 0.35);
+  --sh-3: 0 2px 6px rgba(16, 24, 40, 0.05), 0 26px 52px -28px rgba(16, 24, 40, 0.4);
+  --sh-rail: 8px 0 34px -22px rgba(10, 12, 16, 0.7);
+  --sh-pop: 0 4px 14px rgba(16, 24, 40, 0.1), 0 30px 60px -30px rgba(16, 24, 40, 0.45);
+
+  --scrim: rgba(232, 234, 238, 0.72);
+  --skeleton-a: #eceef1;
+  --skeleton-b: #f6f7f9;
+}
+
+/* ==========================================================================
+   DARK THEME — graphite observatory at night
+   ========================================================================== */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --env: #0b0c0e;
+  --env-2: #08090a;
+  --surface: #131417;
+  --surface-2: #17181c;
+  --card: #1a1c20;
+  --card-soft: #212429;
+  --well: #16181b;
+  --well-2: #202226;
+  --rail: #0d0e10;
+  --rail-hover: #1b1d21;
+  --rail-text: rgba(255, 255, 255, 0.5);
+  --rail-text-active: #ffffff;
+
+  --text: #eceef2;
+  --text-2: #a0a6b0;
+  --text-3: #767c87;
+  --text-4: #565c66;
+  --text-invert: #14161a;
+
+  --hairline: rgba(255, 255, 255, 0.07);
+  --hairline-strong: rgba(255, 255, 255, 0.13);
+  --track: #2a2d33;
+
+  --accent: #ff8a3d;
+  --accent-2: #ffa163;
+  --accent-soft: rgba(255, 138, 61, 0.14);
+  --accent-ink: #ffa669;
+
+  --c-activity: #6f95ec;
+  --c-activity-soft: rgba(111, 149, 236, 0.16);
+  --c-recovery: #56b98a;
+  --c-recovery-soft: rgba(86, 185, 138, 0.16);
+  --c-sleep: #7a8be8;
+  --c-sleep-soft: rgba(122, 139, 232, 0.16);
+  --c-mind: #a08ce6;
+  --c-mind-soft: rgba(160, 140, 230, 0.16);
+  --c-nutrition: #eda54f;
+  --c-nutrition-soft: rgba(237, 165, 79, 0.16);
+  --c-body: #4fb8b4;
+  --c-body-soft: rgba(79, 184, 180, 0.16);
+  --c-danger: #e07a6b;
+  --c-danger-soft: rgba(224, 122, 107, 0.15);
+  --c-positive: #56b98a;
+
+  --grid-line: rgba(255, 255, 255, 0.055);
+  --chart-label: #767c87;
+
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sh-2: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 28px -20px rgba(0, 0, 0, 0.9);
+  --sh-3: 0 2px 8px rgba(0, 0, 0, 0.45), 0 30px 56px -32px rgba(0, 0, 0, 1);
+  --sh-rail: 8px 0 34px -22px rgba(0, 0, 0, 0.9);
+  --sh-pop: 0 6px 18px rgba(0, 0, 0, 0.5), 0 34px 64px -34px rgba(0, 0, 0, 1);
+
+  --scrim: rgba(11, 12, 14, 0.72);
+  --skeleton-a: #202226;
+  --skeleton-b: #26282d;
+}

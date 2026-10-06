@@ -1,0 +1,1606 @@
+You are building WINTERARC.
+
+Read this entire specification before writing any code.
+
+Do not start implementing immediately. First understand the product, design language,
+information architecture, constraints, and implementation rules below.
+
+============================================================
+1. PRODUCT DEFINITION
+============================================================
+
+WinterArc is a DESKTOP-ONLY personal health, fitness, nutrition, recovery,
+wellness and analytics application.
+
+It aggregates information from multiple external health/fitness/wellness
+applications and presents the result as a beautiful, visual, unified
+personal dashboard.
+
+WinterArc is NOT:
+
+- a social fitness application
+- a workout-only application
+- a calorie tracker only
+- a nutrition-only application
+- a chatbot
+- a raw health-data browser
+- a mobile application stretched onto a desktop screen
+- a gamified XP/level system
+- a spreadsheet disguised as a dashboard
+
+WinterArc SHOULD feel like:
+
+    "A personal health observatory."
+
+The user should open WinterArc and immediately understand:
+
+- How active they have been
+- How their recovery is doing
+- How they are sleeping
+- How their nutrition is doing
+- How their body/weight is changing
+- How their mental/wellness state is changing
+- How these things relate to each other over time
+
+The application should prioritize VISUAL COMMUNICATION over paragraphs of text.
+
+The user should be able to understand most of the dashboard by looking at it,
+not reading it.
+
+============================================================
+2. ABSOLUTE IMPLEMENTATION CONSTRAINT
+============================================================
+
+THIS IS CRITICAL.
+
+The entire application must use ONLY:
+
+- HTML
+- CSS
+- vanilla JavaScript
+
+Nothing else.
+
+DO NOT use:
+
+- React
+- Next.js
+- Angular
+- Vue
+- Svelte
+- Astro
+- Vite
+- Tailwind
+- Bootstrap
+- Material UI
+- shadcn
+- component libraries
+- frontend frameworks
+- build frameworks
+- TypeScript
+- JSX/TSX
+- Node.js as an application runtime
+- Electron
+- any other frontend framework
+
+The result must be a genuinely vanilla HTML/CSS/JavaScript application.
+
+Use standard browser APIs wherever possible.
+
+Structure the project cleanly:
+
+/index.html
+/css/
+    styles.css
+    components.css
+    themes.css
+/js/
+    app.js
+    data/
+    components/
+    pages/
+    services/
+    utils/
+/assets/
+
+The exact folder structure may be improved if there is a strong reason,
+but the fundamental requirement remains:
+
+PURE HTML + CSS + JAVASCRIPT.
+
+Do not introduce unnecessary infrastructure.
+
+============================================================
+3. DESKTOP-FIRST / DESKTOP-ONLY
+============================================================
+
+WinterArc is designed for desktop monitors and laptops.
+
+Do NOT design the application around a phone viewport.
+
+Do NOT take a mobile UI and stretch it horizontally.
+
+The desktop canvas should be deliberately used.
+
+The interface should feel like a proper desktop application:
+
+- persistent navigation
+- large information canvas
+- multiple cards visible simultaneously
+- wide charts
+- dense but breathable information architecture
+- keyboard-friendly interaction
+- hover states
+- smooth transitions
+- expandable panels
+- multi-column layouts
+
+The application should look excellent around:
+
+1280px
+1440px
+1600px
+1920px
+
+Do not sacrifice desktop composition to accommodate mobile.
+
+A narrow viewport may gracefully collapse the navigation, but mobile is NOT
+the design target.
+
+============================================================
+4. VISUAL REFERENCES
+============================================================
+
+The supplied reference images are inspiration, NOT templates to copy.
+
+The most important reference is the large GREY / WHITE desktop health dashboard.
+
+Its visual language should be the primary foundation of WinterArc.
+
+The reference has:
+
+- a light silver/grey environment
+- an almost-white central application surface
+- soft grey cards
+- subtle separation between surfaces
+- rounded rectangular modules
+- extremely soft shadows
+- large clean typography
+- large numerical metrics
+- small visual indicators
+- charts integrated directly into cards
+- a dark vertical navigation rail
+- a restrained orange accent
+- lots of whitespace
+- strong visual hierarchy
+- almost no visual noise
+
+The interface feels:
+
+    premium
+    calm
+    clinical
+    modern
+    analytical
+    soft
+    polished
+
+It does NOT feel:
+
+    corporate
+    enterprise
+    spreadsheet-like
+    neon
+    gamer
+    overly technical
+    childish
+
+Use this as the visual DNA.
+
+------------------------------------------------------------
+REFERENCE 1 — FITNESS / HEALTH MOBILE
+------------------------------------------------------------
+
+The first reference demonstrates:
+
+- large rounded cards
+- large metric typography
+- soft purple backgrounds
+- exercise cards
+- progress rings
+- visual progress indicators
+- simple illustrations
+- strong visual hierarchy
+
+Take from it:
+
+- card composition
+- metric hierarchy
+- progress visualization
+- visual simplicity
+
+Do NOT copy its purple visual identity.
+
+WinterArc should be substantially more neutral and sophisticated.
+
+------------------------------------------------------------
+REFERENCE 2 — SAMSUNG HEALTH STYLE
+------------------------------------------------------------
+
+This reference demonstrates:
+
+- clean health metrics
+- activity cards
+- calories
+- time
+- distance
+- workouts
+- daily goals
+- activity details
+- extremely readable information hierarchy
+
+Take:
+
+- clarity
+- metric grouping
+- health/activity information architecture
+- compact visual statistics
+
+Do NOT turn WinterArc into a Samsung Health clone.
+
+------------------------------------------------------------
+REFERENCE 3/4 — GREY/WHITE DESKTOP DASHBOARD
+------------------------------------------------------------
+
+THIS IS THE MOST IMPORTANT VISUAL REFERENCE.
+
+Use its:
+
+- silver/grey environment
+- white central surface
+- soft dark sidebar
+- rounded modules
+- minimal borders
+- subtle depth
+- sparse accent color
+- large visual dashboard composition
+- modular cards
+- chart integration
+- clean typography
+- premium minimalism
+
+as the primary WinterArc design direction.
+
+This is the closest representation of what WinterArc should look like.
+
+------------------------------------------------------------
+REFERENCE 5 — NUTRITION / FOOD UI
+------------------------------------------------------------
+
+Nutrition is NOT optional.
+
+WinterArc MUST include nutrition.
+
+Take inspiration from nutrition applications such as:
+
+- FatSecret
+- MacroFactor
+
+The nutrition system should support visual presentation of:
+
+- calories
+- protein
+- carbohydrates
+- fats
+- nutrition targets
+- consumed vs target
+- remaining allowance
+- meal distribution
+- nutritional trends
+- weight trends
+- nutritional consistency
+
+Nutrition should feel like a first-class WinterArc domain.
+
+Do not treat nutrition as an afterthought hidden inside Settings.
+
+------------------------------------------------------------
+REFERENCE 6 — GAMIFIED FITNESS UI
+------------------------------------------------------------
+
+This reference demonstrates:
+
+- activity progress
+- exercise categories
+- recovery
+- visual progress
+- attractive charts
+- strong use of icons
+
+Take the visual communication.
+
+Do NOT copy:
+
+- XP systems
+- level systems
+- excessive gamification
+- childish reward mechanics
+
+WinterArc can make progress visually satisfying without becoming a game.
+
+------------------------------------------------------------
+REFERENCE 7 — MODULAR NUTRITION DASHBOARD
+------------------------------------------------------------
+
+This reference demonstrates something important:
+
+WinterArc can display MANY small pieces of information simultaneously
+without turning the interface into a spreadsheet.
+
+Use:
+
+- modular cards
+- varied card sizes
+- visual grouping
+- compact charts
+- circular indicators
+- small trend graphs
+- visual nutrition breakdowns
+
+But maintain the silver/white WinterArc visual identity.
+
+============================================================
+5. COLOR SYSTEM
+============================================================
+
+The default theme should be LIGHT.
+
+Primary visual direction:
+
+    silver
+    white
+    off-white
+    soft grey
+    charcoal
+    black
+
+Think:
+
+    silver-white hardware
+    frosted glass
+    polished aluminium
+    soft studio lighting
+    modern health device
+
+Do not use excessive gradients.
+
+Do not make every card colorful.
+
+The BASE UI should be largely monochromatic.
+
+Accent colors should communicate meaning.
+
+Suggested semantic accents:
+
+Activity:
+    restrained blue
+
+Recovery:
+    muted green
+
+Sleep:
+    cool indigo / blue
+
+Mental wellbeing:
+    restrained violet
+
+Nutrition:
+    subtle orange / amber
+
+Body / weight:
+    muted teal or blue
+
+Warning:
+    restrained red
+
+Positive:
+    muted green
+
+These accents should appear mainly in:
+
+- charts
+- progress indicators
+- small status indicators
+- icons
+- selected navigation states
+- important metrics
+
+Do not turn entire screens into rainbow dashboards.
+
+------------------------------------------------------------
+DARK MODE
+------------------------------------------------------------
+
+Dark mode is REQUIRED.
+
+It should not simply invert the light theme.
+
+Design a genuine dark WinterArc theme.
+
+Dark mode should feel like:
+
+    dark graphite
+    blackened silver
+    charcoal
+    soft grey
+    subtle cool highlights
+
+Avoid:
+
+- pure black everywhere
+- neon cyberpunk
+- glowing gamer UI
+- excessive gradients
+
+The dark theme should feel like the nighttime version of the same product.
+
+The visual identity must remain consistent between light and dark mode.
+
+Provide a clear theme toggle.
+
+============================================================
+6. NAVIGATION
+============================================================
+
+The primary desktop navigation should be a VERTICAL SIDEBAR.
+
+Use the supplied grey/white dashboard reference as the strongest inspiration.
+
+The sidebar should be visually integrated into the application rather than
+looking like a generic Bootstrap sidebar.
+
+It should be relatively narrow.
+
+Example structure:
+
+    [WinterArc mark]
+
+    Overview
+
+    Activity
+    Recovery
+    Sleep
+    Nutrition
+    Body
+    Mind
+    Trends
+
+    ----------------
+
+    Settings
+
+The navigation should use:
+
+- simple icons
+- short labels
+- subtle active-state treatment
+- smooth transitions
+- no unnecessary text descriptions
+
+The active page should be immediately obvious.
+
+Do not make the sidebar huge.
+
+Do not use a hamburger menu as the primary desktop navigation.
+
+------------------------------------------------------------
+OPTIONAL ALTERNATIVE
+------------------------------------------------------------
+
+If a future compact layout is ever needed, the secondary navigation language
+may use a FLOATING PILL / HOVERING NAVIGATION BAR inspired by modern iPhone
+interfaces.
+
+However:
+
+THE PRIMARY DESKTOP DESIGN IS THE SIDEBAR.
+
+Do not replace the desktop sidebar with a bottom navigation bar.
+
+============================================================
+7. VISUAL-FIRST INFORMATION DESIGN
+============================================================
+
+This is extremely important.
+
+WinterArc should communicate through:
+
+- numbers
+- graphs
+- rings
+- bars
+- trends
+- icons
+- shapes
+- visual comparisons
+- small labels
+- status indicators
+
+NOT through large amounts of prose.
+
+Bad:
+
+    "Your recovery has improved significantly compared to the previous
+    seven-day period because your sleep duration has increased..."
+
+Good:
+
+    RECOVERY
+    82
+    ↑ 8.4%
+
+    [visual trend]
+
+    Sleep       ↑
+    HRV         →
+    Rest        ↑
+
+Use text only where it adds meaning.
+
+The user should be able to scan the interface in seconds.
+
+============================================================
+8. DASHBOARD / OVERVIEW
+============================================================
+
+The Overview page is the heart of WinterArc.
+
+It should NOT be a generic collection of random cards.
+
+Build a deliberate visual hierarchy.
+
+Top area:
+
+    Good morning / afternoon / evening
+
+    Today
+    [date]
+
+Then the primary health snapshot.
+
+Example:
+
+    ┌────────────┐ ┌────────────┐ ┌────────────┐
+    │ Activity   │ │ Recovery   │ │ Sleep      │
+    │            │ │            │ │            │
+    │ 8,420      │ │ 82         │ │ 7h 42m     │
+    │ steps      │ │ Good       │ │ +38m       │
+    └────────────┘ └────────────┘ └────────────┘
+
+But do NOT copy this literally.
+
+Infer a better visual composition from the references.
+
+Below the primary metrics:
+
+- activity visualization
+- recovery visualization
+- sleep visualization
+- nutrition summary
+- weight/body trend
+- mental wellbeing trend
+- important correlations
+- daily/weekly/monthly switchers
+
+Use varied card sizes.
+
+Not every card should have identical dimensions.
+
+============================================================
+9. NUTRITION
+============================================================
+
+Nutrition is a CORE WinterArc domain.
+
+The nutrition page should take inspiration from FatSecret and MacroFactor.
+
+Important visual elements:
+
+Calories:
+
+    consumed
+    target
+    remaining
+
+Macros:
+
+    protein
+    carbohydrates
+    fats
+
+Use:
+
+- rings
+- horizontal progress bars
+- macro distributions
+- meal cards
+- calorie trends
+- weekly averages
+- target comparison
+- nutritional consistency
+
+Example:
+
+    1,850 / 2,400 kcal
+
+    Protein       ███████████░░
+    Carbs         █████████░░░░
+    Fat           ███████░░░░░░
+
+But make it substantially more visual and refined.
+
+Nutrition must integrate with:
+
+- body weight
+- activity
+- goals
+- trends
+
+Do NOT isolate nutrition from the rest of the system.
+
+============================================================
+10. ACTIVITY
+============================================================
+
+Activity should visually combine information such as:
+
+- steps
+- distance
+- active calories
+- workouts
+- running
+- cycling
+- swimming
+- walking
+- other tracked activities
+
+Use:
+
+- activity rings
+- timelines
+- weekly charts
+- activity distribution
+- workout summaries
+- trend graphs
+
+Do not make every activity its own giant page.
+
+============================================================
+11. RECOVERY
+============================================================
+
+Recovery should provide a visual summary rather than raw health metrics.
+
+Possible inputs:
+
+- sleep
+- resting heart rate
+- HRV where available
+- activity load
+- rest
+- other available recovery indicators
+
+The user should see something like:
+
+    RECOVERY
+
+        82
+
+    GOOD
+
+    [trend visualization]
+
+    Sleep       ████████
+    Rest        ██████
+    Load        ███████
+
+Do not expose unnecessary raw sensor information by default.
+
+============================================================
+12. SLEEP
+============================================================
+
+Visualize:
+
+- total sleep
+- sleep consistency
+- sleep duration trend
+- sleep timing
+- sleep quality where supported
+- sleep debt/deficit where meaningful
+- weekly/monthly trends
+
+Use charts rather than paragraphs.
+
+============================================================
+13. BODY
+============================================================
+
+Body should include visual tracking of things such as:
+
+- weight
+- weight trend
+- body measurements where available
+- body composition where available
+- progress photos if eventually supported
+- relevant physical metrics
+
+The primary purpose is trend interpretation.
+
+Do not make the page look like a medical record.
+
+============================================================
+14. MIND / WELLBEING
+============================================================
+
+Mental wellbeing is another first-class domain.
+
+Potential data includes:
+
+- mood
+- emotional state
+- stress
+- wellbeing trends
+- journaling-derived summaries if available
+
+Keep it visually calm.
+
+Do not make this page look clinical or depressing.
+
+Use subtle visualization.
+
+============================================================
+15. TRENDS
+============================================================
+
+This is one of WinterArc's most important differentiators.
+
+WinterArc should not merely show:
+
+    "Today you walked 8,420 steps."
+
+It should show relationships over time.
+
+Examples:
+
+    Sleep vs Activity
+
+    Sleep vs Recovery
+
+    Activity vs Weight
+
+    Nutrition vs Weight
+
+    Mood vs Sleep
+
+    Training Load vs Recovery
+
+    Calories vs Weight
+
+Use visual correlations and trend lines.
+
+The application should help the user SEE patterns.
+
+Do not make unsupported medical claims.
+
+Do not pretend correlation means causation.
+
+============================================================
+16. DATA SOURCES
+============================================================
+
+The underlying concept is aggregation.
+
+Potential integrations include the services/apps represented in the supplied
+inspiration list and previous product requirements, including:
+
+- Apple Health
+- Google Fit / Google Health Connect ecosystem
+- Zepp
+- Strava
+- How We Feel
+- Bend
+- nutrition sources such as FatSecret
+- workout sources such as Jefit / Hevy / Lyfta where technically applicable
+
+The exact integration architecture must be designed carefully.
+
+IMPORTANT:
+
+Do NOT display a giant "SOURCE" label on every metric.
+
+The user does NOT need to constantly see:
+
+    Apple Health
+    Zepp
+    Strava
+    Google Fit
+
+The backend should handle source aggregation.
+
+The user should see the RESULT.
+
+If multiple sources provide the same metric, WinterArc should use a
+priority system / source preference system rather than blindly duplicating
+values.
+
+============================================================
+17. SOURCE PRIORITY / DATA RESOLUTION
+============================================================
+
+The user should be able to establish a preferred source for a category.
+
+For example:
+
+    Steps        → preferred source
+    Heart rate   → preferred source
+    Sleep        → preferred source
+    Nutrition    → preferred source
+    Workout      → preferred source
+
+If multiple sources provide overlapping information:
+
+1. Use the user's configured priority.
+2. Prefer the freshest valid data where appropriate.
+3. Avoid duplicate presentation.
+4. Handle conflicts deterministically.
+5. Preserve source provenance internally.
+6. Never silently overwrite data in a destructive way.
+
+The UI should remain clean.
+
+Source management belongs primarily in Settings / Connections.
+
+============================================================
+18. AI
+============================================================
+
+AI IS NOT PART OF V1.
+
+Do NOT build an AI chatbot into the current interface.
+
+Do NOT reserve 25% of the dashboard for an AI chat panel.
+
+Do NOT make WinterArc look like an AI product.
+
+AI is planned for V2.
+
+The architecture should leave room for future AI-powered insights,
+but V1 must work perfectly without AI.
+
+============================================================
+19. ANIMATION
+============================================================
+
+Beautiful animation IS ALLOWED.
+
+In fact, good animation is encouraged.
+
+But animation must communicate hierarchy and state.
+
+Use:
+
+- smooth card transitions
+- chart drawing
+- number transitions
+- progress animation
+- hover elevation
+- sidebar transitions
+- page transitions
+- theme transitions
+- expanding/collapsing panels
+- subtle background motion
+- staggered dashboard loading
+- smooth filtering
+- elegant date transitions
+
+The animation style should feel:
+
+    premium
+    smooth
+    intentional
+    physical
+    calm
+
+NOT:
+
+    childish
+    bouncy
+    distracting
+    game-like
+    excessive
+
+CSS transitions and vanilla JavaScript animation are preferred.
+
+Do not add a huge animation framework just to animate cards.
+
+============================================================
+20. ICONOGRAPHY
+============================================================
+
+Use a consistent icon language.
+
+Icons should be:
+
+- simple
+- geometric
+- clean
+- thin/medium weight
+- visually consistent
+
+Avoid mixing five different icon styles.
+
+If external icon assets are required, keep the implementation lightweight.
+
+Do not introduce a large frontend framework for icons.
+
+============================================================
+21. TYPOGRAPHY
+============================================================
+
+Typography must be clean and modern.
+
+Possible direction:
+
+- Inter
+- Geist-like typography
+- system sans-serif
+
+Use typography hierarchy deliberately.
+
+Large:
+
+    82
+    7h 42m
+    8,420
+
+Medium:
+
+    Recovery
+    Activity
+    Nutrition
+
+Small:
+
+    This week
+    +8.4%
+    7-day average
+
+Avoid excessive bold text.
+
+Numbers should be visually dominant.
+
+============================================================
+22. CARDS
+============================================================
+
+Cards are a fundamental WinterArc component.
+
+Use:
+
+- generous radius
+- subtle shadows
+- subtle tonal differences
+- minimal borders
+- soft surfaces
+- consistent padding
+- deliberate spacing
+
+Cards should NOT all look identical.
+
+Use:
+
+- small metric cards
+- medium insight cards
+- large chart cards
+- timeline cards
+- progress cards
+- comparison cards
+
+The dashboard should feel composed, not tiled.
+
+============================================================
+23. VISUAL DENSITY
+============================================================
+
+The interface should contain substantial information.
+
+But information density must come from VISUALIZATION,
+not walls of text.
+
+Think:
+
+    Bloomberg-level information density
+
+with:
+
+    Apple-level visual restraint
+
+Do not literally copy either.
+
+The target is:
+
+    high information density
+    + excellent visual hierarchy
+    + minimal cognitive load
+
+============================================================
+24. NO RAW DATA BY DEFAULT
+============================================================
+
+Do not expose raw API payloads.
+
+Do not show JSON.
+
+Do not show raw sensor streams.
+
+Do not show database-style tables as the primary interface.
+
+Do not make the user understand technical health data.
+
+WinterArc should interpret and visualize the data.
+
+Raw data may exist internally for debugging/development,
+but it is not part of the user-facing experience.
+
+============================================================
+25. PRODUCT PERSONALITY
+============================================================
+
+WinterArc should feel:
+
+    quiet
+    intelligent
+    analytical
+    premium
+    personal
+    visual
+    precise
+    calm
+
+It should NOT feel:
+
+    loud
+    motivational-speaker-ish
+    childish
+    gamified
+    social
+    medical
+    corporate
+    generic SaaS
+
+Avoid phrases such as:
+
+    "CRUSH YOUR GOALS!"
+    "YOU'RE ON FIRE!"
+    "KEEP GRINDING!"
+
+WinterArc is an observatory, not a motivational coach.
+
+============================================================
+26. INTERACTION MODEL
+============================================================
+
+Interactions should be obvious.
+
+Examples:
+
+- Hovering a chart reveals detailed values.
+- Clicking a metric expands its analysis.
+- Clicking a date changes the dashboard period.
+- Daily / Weekly / Monthly controls update the visualization.
+- Clicking a category navigates to deeper analytics.
+- Cards can expand where useful.
+- Tooltips provide additional context.
+- Theme switching is instant and smooth.
+
+Do not hide important functions behind obscure gestures.
+
+============================================================
+27. SETTINGS
+============================================================
+
+Settings should handle:
+
+- theme
+- source connections
+- source priority
+- goals
+- units
+- notification preferences
+- data refresh
+- account/profile settings
+
+Do not clutter the main dashboard with settings.
+
+============================================================
+28. DATA ARCHITECTURE
+============================================================
+
+Even though the application is vanilla JS, keep the architecture clean.
+
+Separate:
+
+    UI
+    state
+    data models
+    integrations
+    calculations
+    visualization
+    utilities
+
+Do not write one 5,000-line app.js file.
+
+Use ES modules if supported by the deployment environment.
+
+Example:
+
+/js/
+    app.js
+
+    state/
+        store.js
+
+    pages/
+        overview.js
+        activity.js
+        recovery.js
+        sleep.js
+        nutrition.js
+        body.js
+        mind.js
+        trends.js
+        settings.js
+
+    components/
+        sidebar.js
+        metric-card.js
+        chart-card.js
+        progress-ring.js
+        nutrition-card.js
+        trend-card.js
+
+    services/
+        health.js
+        activity.js
+        nutrition.js
+        integrations.js
+
+    utils/
+        dates.js
+        numbers.js
+        calculations.js
+
+The exact architecture may differ, but maintain separation of concerns.
+
+============================================================
+29. DATA SAFETY
+============================================================
+
+Never destroy existing data.
+
+Never silently overwrite user data.
+
+Never perform destructive migrations.
+
+If persistence is implemented:
+
+- validate data
+- handle missing data
+- handle duplicate data
+- handle synchronization conflicts
+- maintain predictable state
+- fail gracefully
+
+Do not use localStorage as an excuse for poor architecture.
+
+If local persistence is appropriate for the prototype, encapsulate it behind
+a data layer so it can later be replaced.
+
+============================================================
+30. DEVELOPMENT PROCESS
+============================================================
+
+FOLLOW THESE STEPS IN ORDER.
+
+DO NOT SKIP A STEP.
+
+------------------------------------------------------------
+STEP 1 — INSPECT
+------------------------------------------------------------
+
+Inspect the existing repository completely.
+
+Understand:
+
+- existing files
+- existing assets
+- existing data
+- existing functionality
+- existing persistence
+- current architecture
+
+Do NOT delete or rewrite existing functionality simply because it is easier.
+
+------------------------------------------------------------
+STEP 2 — PLAN
+------------------------------------------------------------
+
+Before implementation, create a concise implementation plan covering:
+
+1. application shell
+2. navigation
+3. pages
+4. design tokens
+5. reusable components
+6. data model
+7. integration abstraction
+8. visualization system
+9. theme system
+10. animation system
+
+Do not start randomly generating components.
+
+------------------------------------------------------------
+STEP 3 — BUILD THE DESIGN SYSTEM
+------------------------------------------------------------
+
+Implement first:
+
+- colors
+- typography
+- spacing
+- radii
+- shadows
+- card surfaces
+- buttons
+- icons
+- navigation
+- light/dark themes
+
+The entire application must derive from these primitives.
+
+------------------------------------------------------------
+STEP 4 — BUILD THE APPLICATION SHELL
+------------------------------------------------------------
+
+Build:
+
+- desktop canvas
+- sidebar
+- top utility area
+- content area
+- theme switch
+- page routing/state
+
+Do not build individual analytics pages yet.
+
+Make the shell visually excellent first.
+
+------------------------------------------------------------
+STEP 5 — BUILD REUSABLE VISUAL COMPONENTS
+------------------------------------------------------------
+
+Build:
+
+- metric cards
+- progress rings
+- progress bars
+- chart cards
+- trend cards
+- comparison cards
+- nutrition cards
+- activity cards
+- status indicators
+- date controls
+- tabs
+- tooltips
+- expandable cards
+
+Do not duplicate UI code unnecessarily.
+
+------------------------------------------------------------
+STEP 6 — BUILD OVERVIEW
+------------------------------------------------------------
+
+Make Overview the highest-quality page.
+
+It should combine:
+
+- activity
+- recovery
+- sleep
+- nutrition
+- body
+- mind
+- trends
+
+into a coherent visual composition.
+
+Do not simply stack cards vertically.
+
+Use the desktop width.
+
+------------------------------------------------------------
+STEP 7 — BUILD INDIVIDUAL DOMAINS
+------------------------------------------------------------
+
+Implement:
+
+1. Activity
+2. Recovery
+3. Sleep
+4. Nutrition
+5. Body
+6. Mind
+7. Trends
+
+Each should have its own visual identity while remaining part of WinterArc.
+
+------------------------------------------------------------
+STEP 8 — IMPLEMENT DARK MODE
+------------------------------------------------------------
+
+Do not simply invert colors.
+
+Manually tune:
+
+- surfaces
+- contrast
+- charts
+- shadows
+- borders
+- typography
+- accents
+
+for the dark theme.
+
+------------------------------------------------------------
+STEP 9 — IMPLEMENT ANIMATION
+------------------------------------------------------------
+
+Only after the static design is correct.
+
+Add:
+
+- page transitions
+- chart transitions
+- metric transitions
+- hover states
+- card interactions
+- theme transition
+
+Animation must never interfere with usability.
+
+------------------------------------------------------------
+STEP 10 — INTEGRATION ABSTRACTION
+------------------------------------------------------------
+
+Create clean interfaces for external data sources.
+
+Do not hard-code the UI directly to a single provider.
+
+The UI should consume normalized WinterArc data.
+
+Example conceptual model:
+
+    activity
+    sleep
+    recovery
+    nutrition
+    body
+    mood
+
+rather than:
+
+    appleHealthSteps
+    zeppSteps
+    googleFitSteps
+
+Provider-specific logic belongs behind the integration layer.
+
+Do NOT invent unsupported APIs.
+
+If an API/authentication requirement is unknown, mark it explicitly rather
+than fabricating implementation details.
+
+------------------------------------------------------------
+STEP 11 — TEST
+------------------------------------------------------------
+
+Test:
+
+- light mode
+- dark mode
+- 1280px
+- 1440px
+- 1920px
+- empty data
+- partial data
+- missing metrics
+- conflicting metrics
+- long labels
+- large numbers
+- zero values
+- loading states
+- error states
+
+No page should collapse because one data source has no value.
+
+------------------------------------------------------------
+STEP 12 — POLISH
+------------------------------------------------------------
+
+Only after functionality works:
+
+- tune spacing
+- tune typography
+- tune shadows
+- tune card radii
+- tune animation timing
+- tune chart composition
+- tune sidebar
+- tune visual hierarchy
+
+The final result should feel deliberately designed,
+not assembled from components.
+
+============================================================
+31. IMPORTANT VIBE-CODING RULE
+============================================================
+
+Do not interpret this prompt as:
+
+"Make a dashboard with cards."
+
+The goal is to infer the visual design from the supplied references.
+
+The design should feel like one coherent product.
+
+The references should influence:
+
+- proportions
+- whitespace
+- visual hierarchy
+- card geometry
+- information density
+- chart placement
+- navigation
+- surface treatment
+- visual rhythm
+
+but WinterArc must have its OWN identity.
+
+Do not copy screenshots literally.
+
+============================================================
+32. V1 / V2 BOUNDARY
+============================================================
+
+V1:
+
+- health aggregation
+- fitness
+- activity
+- recovery
+- sleep
+- nutrition
+- body
+- mental wellbeing
+- trends
+- source priority
+- visual analytics
+- light mode
+- dark mode
+- beautiful animations
+- desktop experience
+
+V2:
+
+- AI-powered insights
+- natural-language health analysis
+- conversational interface
+- intelligent recommendations
+- deeper cross-domain reasoning
+
+Do not contaminate V1 with V2 features.
+
+============================================================
+33. FINAL DESIGN TEST
+============================================================
+
+Before considering the implementation complete, ask:
+
+"If I remove all the text except numbers and tiny labels,
+can I still understand what is happening?"
+
+If the answer is NO:
+
+Improve the visualization.
+
+Ask:
+
+"Does this look like a health observatory or a generic SaaS dashboard?"
+
+It must look like a health observatory.
+
+Ask:
+
+"Does this look good with no data?"
+
+It must still have a deliberate empty/loading state.
+
+Ask:
+
+"Does the light theme look like polished silver/white hardware?"
+
+It should.
+
+Ask:
+
+"Does the dark theme feel like the same product at night?"
+
+It should.
+
+Ask:
+
+"Does nutrition feel as important as activity?"
+
+It must.
+
+Ask:
+
+"Does this look like a mobile app stretched onto desktop?"
+
+It must NOT.
+
+Ask:
+
+"Could I remove the AI and the product still make complete sense?"
+
+Yes. AI is V2.
+
+============================================================
+FINAL INSTRUCTION
+============================================================
+
+First inspect the repository.
+
+Then create the implementation plan.
+
+Then establish the design system.
+
+Then build the shell.
+
+Then build reusable components.
+
+Then build Overview.
+
+Then build each analytics domain.
+
+Then integrations.
+
+Then animation and polish.
+
+Do not jump directly into random feature implementation.
+
+Do not introduce frameworks.
+
+Do not fabricate APIs.
+
+Do not delete existing functionality.
+
+Do not turn WinterArc into a generic fitness dashboard.
+
+Build WinterArc as a premium, visual, desktop-first personal health
+analytics observatory using ONLY HTML, CSS and vanilla JavaScript.
