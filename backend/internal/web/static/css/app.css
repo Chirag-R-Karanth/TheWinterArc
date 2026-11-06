@@ -288,3 +288,24 @@ html[data-category="flexibility"] .category-title::before { background: var(--ac
   .content { padding: 1.1rem 1rem 2.5rem; }
   .stat-value { font-size: 1.6rem; }
 }
+/* Responsive polish and accessible interaction states */
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.panel, .stat-card { transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+.panel:hover { border-color: var(--surface2); }
+.stat-card:hover { transform: translateY(-2px); border-color: var(--surface2); }
+.btn:focus-visible, .select:focus-visible { outline-offset: 2px; }
+@media (max-width: 760px) {
+  .site-header { align-items: flex-start; gap: .7rem; padding: .75rem 1rem; }
+  .brand { flex: 1 0 100%; }
+  .main-nav { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: .25rem; }
+  .main-nav a { white-space: nowrap; }
+  .sync-strip { margin-left: 0; width: 100%; }
+  .content { padding: 1rem 1rem 2rem; }
+  .card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; }
+  .stat-card { padding: .8rem; }
+  .stat-value { font-size: 1.55rem; }
+  .toolbar { align-items: flex-start; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
