@@ -96,6 +96,7 @@ func (s *Server) handleCreateMesocycle(w http.ResponseWriter, r *http.Request) {
         strings.TrimSpace(in.Name), strings.TrimSpace(in.Goal), start, in.DurationWeeks, in.DeloadWeek, in.Notes).Scan(&id)
     if err != nil { writeJSON(w,500,map[string]string{"error":"could not create mesocycle"}); return }
     for _, week := range in.Weeks {
+        if in.DeloadWeek != nil && week.WeekNumber == *in.DeloadWeek { week.IsDeload = true }
         _, err = tx.Exec(r.Context(), `
             INSERT INTO mesocycle_weeks(mesocycle_id,week_number,focus,volume_multiplier,target_rir,is_deload)
             VALUES($1,$2,$3,$4,$5,$6)`,
