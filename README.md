@@ -370,3 +370,25 @@ Look at the truth.
 Adapt.**
 
 And keep going.
+
+
+---
+
+## New: Mesocycles and automated ingestion
+
+The backend exposes authenticated periodization endpoints:
+
+- `GET /api/v1/mesocycles` — list training blocks
+- `POST /api/v1/mesocycles` — create a block and its weekly prescriptions
+- `GET /api/v1/mesocycles/{id}` — inspect a block and its weeks
+
+A create payload requires `name`, `startDate` (`YYYY-MM-DD`) and `durationWeeks` (1–52). Optional `deloadWeek` marks a deload; when no custom `weeks` are sent, the API generates a conservative build and deload prescription. API routes require the `X-API-Key` header when `WINTERARC_API_KEY` is configured.
+
+### Provider setup
+
+- **Lyfta:** create a personal API key in Lyfta's developer settings and set `LYFTA_API_KEY` in `.env`. The backend polls the documented workouts endpoint hourly and retains the source payload for audit.
+- **Google Fit / Android:** the Android companion reads Health Connect. This is the recommended mobile-first route; WinterArc does not add a new dependency on the legacy Google Fit APIs.
+- **FatSecret:** configure `FATSECRET_KEY` and `FATSECRET_SECRET`.
+- **Bend / How We Feel:** still require a supported API or user export format before an ingestion adapter can be implemented safely.
+
+Run backend checks with `cd backend && go test ./... && go build ./...`.
