@@ -17,6 +17,7 @@ import (
 	"winterarc/internal/plumber"
 	"winterarc/internal/sources"
 	"winterarc/internal/sources/fatsecret"
+	"winterarc/internal/sources/lyfta"
 	"winterarc/internal/sync"
 	"winterarc/internal/web"
 )
@@ -46,7 +47,7 @@ func main() {
 	mgr := sync.NewManager(pg.Pool, cfg.SyncInterval, log)
 
 	mgr.Register(fatsecret.New(pg.Pool, store, cfg.FatSecretKey, cfg.FatSecretSecret))
-	mgr.Register(sources.UnconfiguredProvider("lyfta"))
+	mgr.Register(lyfta.New(pg.Pool, store, cfg.LyftaAPIKey))
 	mgr.Register(sources.UnconfiguredProvider("bend"))
 	mgr.Register(sources.UnconfiguredProvider("howwefeel"))
 	mgr.Register(sources.UnconfiguredProvider("healthconnect"))
