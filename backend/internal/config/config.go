@@ -22,6 +22,7 @@ type Config struct {
 
 	FatSecretKey    string
 	FatSecretSecret string
+	LyftaAPIKey string
 }
 
 func Load() *Config {
@@ -41,6 +42,7 @@ func Load() *Config {
 
 		FatSecretKey:    getStr("FATSECRET_KEY", ""),
 		FatSecretSecret: getStr("FATSECRET_SECRET", ""),
+		LyftaAPIKey: getStr("LYFTA_API_KEY", ""),
 	}
 }
 
