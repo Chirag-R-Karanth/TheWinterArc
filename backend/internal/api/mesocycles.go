@@ -86,7 +86,9 @@ func (s *Server) handleCreateMesocycle(w http.ResponseWriter, r *http.Request) {
     start, err := in.validate()
     if err != nil { writeJSON(w,400,map[string]string{"error":err.Error()}); return }
 
-    if len(in.Weeks) == 0 { in.Weeks = defaultMesocycleWeeks(in.DurationWeeks, in.DeloadWeek) }\n\n    tx, err := s.db.Pool.Begin(r.Context())
+    if len(in.Weeks) == 0 { in.Weeks = defaultMesocycleWeeks(in.DurationWeeks, in.DeloadWeek) }
+
+    tx, err := s.db.Pool.Begin(r.Context())
     if err != nil { writeJSON(w,500,map[string]string{"error":"could not start transaction"}); return }
     defer tx.Rollback(r.Context())
     var id int64
