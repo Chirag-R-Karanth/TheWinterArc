@@ -147,7 +147,8 @@ func (s *Server) handleGetMesocycle(w http.ResponseWriter, r *http.Request) {
 func defaultMesocycleWeeks(duration int, deload *int) []mesocycleWeekInput {
     weeks := make([]mesocycleWeekInput, 0, duration)
     for n := 1; n <= duration; n++ {
-        multiplier := 1.0 + float64(n-1)*0.05
+        multiplier := 1.0 + float64(n-1)*0.04
+        if multiplier > 1.2 { multiplier = 1.2 }
         rir := 3.0
         focus := "Progressive overload"
         isDeload := deload != nil && n == *deload
