@@ -86,7 +86,7 @@ func (s *Server) handleCreateMesocycle(w http.ResponseWriter, r *http.Request) {
     start, err := in.validate()
     if err != nil { writeJSON(w,400,map[string]string{"error":err.Error()}); return }
 
-    tx, err := s.db.Pool.Begin(r.Context())
+    if len(in.Weeks) == 0 { in.Weeks = defaultMesocycleWeeks(in.DurationWeeks, in.DeloadWeek) }\n\n    tx, err := s.db.Pool.Begin(r.Context())
     if err != nil { writeJSON(w,500,map[string]string{"error":"could not start transaction"}); return }
     defer tx.Rollback(r.Context())
     var id int64
@@ -135,4 +135,31 @@ func (s *Server) handleGetMesocycle(w http.ResponseWriter, r *http.Request) {
         out.Weeks = append(out.Weeks,wk)
     }
     writeJSON(w,200,out)
+}
+
+
+// defaultMesocycleWeeks creates a conservative linear build with an optional
+// deload. It is a starting prescription, not an auto-regulated medical or
+// coaching recommendation; users can supply their own weekly targets.
+func defaultMesocycleWeeks(duration int, deload *int) []mesocycleWeekInput {
+    weeks := make([]mesocycleWeekInput, 0, duration)
+    for n := 1; n <= duration; n++ {
+        multiplier := 1.0 + float64(n-1)*0.05
+        rir := 3.0
+        focus := "Progressive overload"
+        isDeload := deload != nil && n == *deload
+        if isDeload {
+            multiplier = 0.6
+            rir = 4
+            focus = "Deload — reduce fatigue"
+        } else if n == duration {
+            focus = "Peak / performance"
+            rir = 1
+        }
+        weeks = append(weeks, mesocycleWeekInput{
+            WeekNumber:n, Focus:focus, VolumeMultiplier:multiplier,
+            TargetRIR:&rir, IsDeload:isDeload,
+        })
+    }
+    return weeks
 }
