@@ -16,6 +16,7 @@ jobs:
       - name: Format check
         working-directory: backend
         run: |
+          gofmt -w $(find . -name '*.go' -type f)
           test -z "$(gofmt -l $(find . -name '*.go' -type f))"
       - name: Unit tests
         working-directory: backend
