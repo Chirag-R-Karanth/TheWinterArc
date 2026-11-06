@@ -1,0 +1,25 @@
+name: Backend checks
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+    branches: [main]
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - name: Format check
+        working-directory: backend
+        run: |
+          test -z "$(gofmt -l $(find . -name '*.go' -type f))"
+      - name: Unit tests
+        working-directory: backend
+        run: go test ./...
+      - name: Build
+        working-directory: backend
+        run: go build ./...
