@@ -63,6 +63,9 @@ func (s *Server) routes(ui http.Handler) http.Handler {
 	api.Get("/insights", s.handleListInsights)
 	api.Post("/correlations/run", s.handleCorrelate)
 	api.Get("/activities", s.handleListActivities)
+	api.Get("/mesocycles", s.handleListMesocycles)
+	api.Post("/mesocycles", s.handleCreateMesocycle)
+	api.Get("/mesocycles/{id}", s.handleGetMesocycle)
 
 	r.Mount("/api/v1", api)
 	r.Mount("/", ui)
