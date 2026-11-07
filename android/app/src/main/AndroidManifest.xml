@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Access over the local network (Tailscale) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Health Connect read permissions -->
+    <uses-permission android:name="android.permissions.health.READ_STEPS" />
+    <uses-permission android:name="android.permissions.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permissions.health.READ_SLEEP" />
+    <uses-permission android:name="android.permissions.health.READ_HEART_RATE_RECORD" />
+
+    <!-- Health Connect is optional on-device; declare it accordingly -->
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+    </queries>
+
+    <application
+        android:name=".WinterArcApp"
+        android:label="Winter Arc"
+        android:theme="@style/Theme.WinterArc"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
