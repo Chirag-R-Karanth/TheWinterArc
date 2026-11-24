@@ -3,6 +3,7 @@
 import http.client
 import json
 import os
+import shutil
 from pathlib import Path
 import socket
 import subprocess
@@ -63,6 +64,73 @@ class APISmokeTest(unittest.TestCase):
         status, _, body = self.http("GET", f"/api/v1/{path}")
         self.assertEqual(status, 200)
         return json.loads(body)
+
+    def analyze(self, spec, guarded=True):
+        headers = {"Content-Type": "application/json"}
+        if guarded:
+            headers.update(Origin=f"http://127.0.0.1:{self.port}", **{"X-WinterArc-Local": "1"})
+        status, _, body = self.http("POST", "/api/v1/analysis/correlation", json.dumps(spec), headers)
+        return status, json.loads(body)
+
+    def test_metric_registry_and_lagged_correlation_over_loopback(self):
+        spec = {"x": "weight", "y": "sleep_duration", "lag_days": 1, "rolling_days": 3,
+                "start_date": "2026-01-01", "end_date": "2026-01-05", "timezone": "America/New_York"}
+        self.assertEqual(self.analyze(spec, guarded=False)[0], 403)
+        self.assertEqual(self.analyze({**spec, "lag_days": 91})[0], 422)
+        self.assertEqual(self.analyze({**spec, "y": "unknown"})[0], 422)
+        self.assertEqual(self.analyze({**spec, "end_date": "2027-02-01"})[0], 422)
+        status, empty = self.analyze(spec)
+        self.assertEqual((status, empty["paired_n"], empty["pearson"]), (200, 0, None))
+        self.assertEqual([row["paired_n"] for row in empty["rolling"]], [0, 0, 0])
+        rows = [dict(metric=metric, unit=unit, observed_at=f"2026-01-{day:02}T02:00:00Z", value=value)
+                for metric, unit, observations in [
+                    ("weight", "kg", [(2, 60), (3, 62), (4, 64), (5, None), (6, 68)]),
+                    ("sleep_duration", "h", [(3, 5), (4, 6), (5, 7), (6, 4)])]
+                for day, value in observations]
+        self.assertEqual(self.post(json.dumps(rows))[0], 200)
+        self.assertIn({"id": "sleep_duration", "unit": "min", "aggregation": "daily_mean"}, self.read_json("metrics"))
+        daily = self.read_json("metrics/weight/daily?timezone=America%2FNew_York")["daily"]
+        self.assertEqual(daily[0]["date"], "2026-01-01")
+        self.assertIsNone(daily[3]["value"])
+        status, result = self.analyze(spec)
+        if not shutil.which("Rscript"):
+            self.assertEqual(status, 503)
+            return
+        self.assertEqual(status, 200, result)
+        self.assertEqual((result["x_observed_days"], result["y_observed_days"], result["paired_n"]), (4, 4, 3))
+        self.assertAlmostEqual(result["pearson"], 1)
+        self.assertAlmostEqual(result["spearman"], 1)
+        self.assertAlmostEqual(result["linear"]["slope"], 30)
+        self.assertAlmostEqual(result["linear"]["intercept"], -1500)
+        self.assertEqual(result["distributions"]["y"], [300, 330, 360, 390, 420])
+        self.assertEqual([row["paired_n"] for row in result["rolling"]], [3, 2, 1])
+        self.assertIsNone(result["rolling"][1]["pearson"])
+        self.assertEqual(result["pairs"][0]["x_measurement_ids"], daily[0]["measurement_ids"])
+        self.assertEqual(result["pairs"][0]["y_date"], "2026-01-02")
+        status, reversed_result = self.analyze({**spec, "x": spec["y"], "y": spec["x"], "lag_days": -1,
+                                                 "start_date": "2026-01-02", "end_date": "2026-01-06"})
+        self.assertEqual((status, reversed_result["paired_n"]), (200, 3))
+
+    @unittest.skipUnless(shutil.which("Rscript"), "Rscript required for LOESS verification")
+    def test_loess_and_constant_series_over_loopback(self):
+        rows = [dict(metric=metric, unit=unit, observed_at=f"2026-01-{day:02}T12:00:00Z", value=value)
+                for day in range(1, 13) for metric, unit, value in [
+                    ("weight", "kg", 50 + day), ("heart_rate", "bpm", 2 * day + 20),
+                    ("sleep_duration", "h", 7)]]
+        self.assertEqual(self.post(json.dumps(rows))[0], 200)
+        status, result = self.analyze({"x": "weight", "y": "heart_rate"})
+        self.assertEqual(status, 200, result)
+        self.assertTrue(result["engine_version"])
+        self.assertEqual(len(result["loess"]), 40)
+        for point in result["loess"]:
+            self.assertAlmostEqual(point["y"], 2 * point["x"] - 80)
+        status, constant = self.analyze({"x": "weight", "y": "sleep_duration"})
+        self.assertEqual(status, 200, constant)
+        self.assertEqual(constant["paired_n"], 12)
+        self.assertIsNone(constant["pearson"])
+        self.assertIsNone(constant["spearman"])
+        self.assertIsNone(constant["linear"])
+        self.assertEqual(constant["loess"], [])
 
     def post(self, body=FIXTURE, **headers):
         return self.http("POST", "/api/v1/imports", body, {
@@ -222,6 +290,57 @@ class APISmokeTest(unittest.TestCase):
         self.assertEqual((local_week["average"], local_week["observed_days"]), (2250, 2))
         self.assertEqual(self.http("GET", "/api/v1/nutrition/summary?timezone=Not%2FA_Zone")[0], 422)
 
+    def test_cardio_summary_over_loopback(self):
+        self.assertIsNone(self.read_json("cardio/summary")["as_of_date"])
+        payload = [dict(metric="heart_rate", value=value, unit=unit, observed_at=when)
+                   for value, unit, when in [
+                       (60, "bpm", "2026-01-01T23:00:00Z"),
+                       (100, "bpm", "2026-01-02T01:00:00Z"),
+                       (120, "bpm", "2026-01-02T12:00:00Z"),
+                       (0, "bpm", "2026-01-03T12:00:00Z"),
+                       (80, "Hz", "2026-01-10T12:00:00Z"),
+                   ]]
+        self.assertEqual(self.post(json.dumps(payload).encode())[0], 200)
+        utc = self.read_json("cardio/summary")
+        self.assertEqual(utc["as_of_date"], "2026-01-03")
+        hr = utc["metrics"]["heart_rate"]
+        self.assertEqual([day["value"] for day in hr["daily"]], [60, 110, None])
+        week = hr["windows"]["7d"]
+        self.assertEqual((week["average"], week["observed_days"], week["sample_count"]), (85, 2, 3))
+        local = self.read_json("cardio/summary?timezone=America%2FNew_York")
+        self.assertEqual(local["metrics"]["heart_rate"]["windows"]["7d"]["average"], 100)
+        self.assertEqual(self.http("GET", "/api/v1/cardio/summary?timezone=Not%2FA_Zone")[0], 422)
+
+    def test_overview_summary_over_loopback(self):
+        empty = self.read_json("overview/summary")
+        self.assertIsNone(empty["as_of_date"])
+        self.assertIsNone(empty["metrics"]["weight"]["latest"])
+        payload = [dict(metric=metric, value=value, unit=unit, observed_at=when)
+                   for metric, value, unit, when in [
+                       ("weight", 70, "kg", "2026-01-01T12:00:00Z"),
+                       ("weight", 72, "kg", "2026-01-03T12:00:00Z"),
+                       ("weight", 154, "lb", "2026-01-04T12:00:00Z"),
+                       ("weight", None, "kg", "2026-01-05T12:00:00Z"),
+                       ("sleep_duration", 7, "h", "2026-01-09T01:00:00Z"),
+                       ("nutrition_fibre", 5, "g", "2026-02-01T01:00:00Z"),
+                   ]]
+        self.assertEqual(self.post(json.dumps(payload).encode())[0], 200)
+        overview = self.read_json("overview/summary")
+        self.assertEqual((overview["method_version"], overview["as_of_date"]), (1, "2026-01-09"))
+        weight = overview["metrics"]["weight"]
+        latest = next(row for row in self.read_json("series") if row["unit"] == "lb")
+        self.assertEqual(weight["latest"], {key: latest[key] for key in
+                         ("id", "import_id", "value", "unit", "observed_at")})
+        self.assertEqual(weight["previous"]["average"], 70)
+        self.assertAlmostEqual(weight["current"]["average"], 70.92661249)
+        self.assertAlmostEqual(weight["change"], 0.92661249)
+        self.assertEqual(weight["current"]["observed_days"], 2)
+        self.assertIsNone(overview["metrics"]["sleep_duration"]["change"])
+        local = self.read_json("overview/summary?timezone=America%2FNew_York")
+        self.assertEqual(local["as_of_date"], "2026-01-08")
+        self.assertEqual(local["metrics"]["weight"]["current"]["start_date"], "2026-01-02")
+        self.assertEqual(self.http("GET", "/api/v1/overview/summary?timezone=Not%2FA_Zone")[0], 422)
+
     def test_same_origin_assets(self):
         for path, media_type, marker in [
             ("/", "text/html", b"Synthetic fixtures only"),
@@ -237,3 +356,5 @@ class APISmokeTest(unittest.TestCase):
                 self.assertNotIn("Access-Control-Allow-Origin", headers)
         self.assertIn(b'id="sleep-windows"', self.http("GET", "/")[2])
         self.assertIn(b'id="nutrition-windows"', self.http("GET", "/")[2])
+        self.assertIn(b'id="cardio-windows"', self.http("GET", "/")[2])
+        self.assertIn(b'id="overview-windows"', self.http("GET", "/")[2])
