@@ -1,5 +1,5 @@
 # Phase 07 — Release
-Status: NOT VERIFIED / NOT STARTED in this documentation bundle.
+Status: [Fixture release rehearsed on Fedora 43](../build-reports/2026-11-24-release-rehearsal.md); the full release gate remains open.
 ## Prerequisites
 Previous phase gate verified or explicitly documented as blocked; do not bypass dependencies.
 ## Implementation

@@ -1,5 +1,7 @@
 """Loopback-only Phase 01 API and same-origin shell."""
 
+import csv
+import io
 import os
 import re
 import sqlite3
@@ -9,7 +11,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
@@ -55,7 +57,7 @@ async def local_only(request: Request, call_next):
     response.headers.update({
         "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
-        "Content-Security-Policy": "default-src 'self'; object-src 'none'; base-uri 'none'; "
+        "Content-Security-Policy": "default-src 'self'; img-src 'self' blob:; object-src 'none'; base-uri 'none'; "
                                    "frame-ancestors 'none'; form-action 'none'",
     })
     return response
@@ -114,6 +116,20 @@ def metric_daily(request: Request, metric: str, timezone: str = "UTC"):
     if metric not in METRICS:
         raise HTTPException(404, "Unknown metric")
     return daily_metric(request.app.state.store.series(), metric, _timezone_key(timezone))
+
+
+@app.get("/api/v1/metrics/{metric}/daily.csv")
+def metric_daily_csv(request: Request, metric: str, timezone: str = "UTC"):
+    data = metric_daily(request, metric, timezone)
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(["metric", "timezone", "date", "unit", "daily_mean", "sample_count", "measurement_ids"])
+    for row in data["daily"]:
+        writer.writerow([metric, data["timezone"], row["date"], data["unit"], row["value"],
+                         row["sample_count"], " ".join(map(str, row["measurement_ids"]))])
+    return Response(output.getvalue(), media_type="text/csv", headers={
+        "Content-Disposition": f'attachment; filename="winterarc-{metric}-daily.csv"',
+    })
 
 
 class CorrelationRequest(BaseModel):

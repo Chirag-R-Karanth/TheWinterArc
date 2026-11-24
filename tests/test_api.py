@@ -1,6 +1,8 @@
 """Smoke tests against the actual loopback launcher and an isolated store."""
 
+import csv
 import http.client
+import io
 import json
 import os
 import shutil
@@ -71,6 +73,17 @@ class APISmokeTest(unittest.TestCase):
             headers.update(Origin=f"http://127.0.0.1:{self.port}", **{"X-WinterArc-Local": "1"})
         status, _, body = self.http("POST", "/api/v1/analysis/correlation", json.dumps(spec), headers)
         return status, json.loads(body)
+
+    def test_csv_matches_daily_series_and_preserves_missing(self):
+        self.assertEqual(self.post(FIXTURE)[0], 200)
+        status, headers, payload = self.http("GET", "/api/v1/metrics/weight/daily.csv")
+        self.assertEqual(status, 200)
+        self.assertIn("attachment", headers["Content-Disposition"])
+        daily, = self.read_json("metrics/weight/daily")["daily"]
+        row, = csv.DictReader(io.StringIO(payload.decode()))
+        self.assertEqual((row["date"], row["daily_mean"], row["sample_count"], row["measurement_ids"]),
+                         (daily["date"], "", str(daily["sample_count"]),
+                          " ".join(map(str, daily["measurement_ids"]))))
 
     def test_metric_registry_and_lagged_correlation_over_loopback(self):
         spec = {"x": "weight", "y": "sleep_duration", "lag_days": 1, "rolling_days": 3,
