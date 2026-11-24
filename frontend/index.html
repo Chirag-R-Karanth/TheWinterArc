@@ -8,11 +8,33 @@
   <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <header>
-    <h1>TheWinterArc V2</h1>
-    <p>Synthetic fixtures only. No live sources connected.</p>
-  </header>
-  <main>
+  <a class="skip" href="#workspace">Skip to workspace</a>
+  <aside class="rail">
+    <a class="brand" href="#overview-heading"><span class="mark" aria-hidden="true">W</span><span>The Winter Arc<small>PERFORMANCE WORKSPACE</small></span></a>
+    <nav aria-label="Workspace">
+      <a href="#overview-heading">Overview</a><a href="#metric-chart-heading">Daily trends</a>
+      <a href="#body-heading">Body</a><a href="#sleep-heading">Sleep</a><a href="#nutrition-heading">Nutrition</a><a href="#cardio-heading">Cardio</a>
+      <a href="#correlation-heading">Correlation lab</a><a href="#photo-heading">Photo comparison</a><a href="#sources-heading">Sources</a><a href="#fixture-heading">Import data</a>
+    </nav>
+    <p class="rail-note">Local workspace</p>
+  </aside>
+  <main id="workspace" tabindex="-1">
+    <header class="masthead">
+      <div><p class="eyebrow">PERFORMANCE / OVERVIEW</p><h1>Performance overview</h1><p>Explore your measurements, trends, and relationships.</p></div>
+      <div class="mast-actions"><span class="badge">Synthetic fixtures only</span><a class="action" href="#fixture-heading">Import data</a></div>
+    </header>
+    <section class="overview" aria-labelledby="overview-heading">
+      <h2 id="overview-heading">Latest measurements</h2>
+      <p id="overview-context">Loading…</p>
+      <div id="overview-cards" class="metrics-grid"></div>
+      <details><summary id="overview-windows-heading">Weekly comparison and provenance</summary><div id="overview-windows">Loading…</div></details>
+    </section>
+    <section class="trend-panel" aria-labelledby="metric-chart-heading">
+      <div class="panel-head"><div><p class="eyebrow">TRENDS</p><h2 id="metric-chart-heading">Daily measurements</h2></div><div class="chart-controls"><label for="daily-metric">Metric</label><select id="daily-metric"></select><a id="daily-export" hidden>Download CSV</a></div></div>
+      <p id="daily-status" role="status"></p>
+      <div id="daily-chart"></div>
+      <details><summary id="daily-data-heading">Daily values and provenance</summary><div id="daily-data"></div></details>
+    </section>
     <section aria-labelledby="fixture-heading">
       <h2 id="fixture-heading">Import a synthetic fixture</h2>
       <p>Load a bundled example or choose a synthetic JSON file (up to 8 MiB). Do not select personal data.</p>
@@ -56,14 +78,6 @@
       <h3 id="sleep-windows-heading">Duration averages and coverage</h3>
       <div id="sleep-windows">Loading…</div>
     </section>
-    <section aria-labelledby="overview-heading">
-      <h2 id="overview-heading">Overview</h2>
-      <p>Latest valid observations retain their recorded units. Weekly means use only observed days.
-        <a href="#sources-heading">Provider discovery status</a></p>
-      <p id="overview-context">Loading…</p>
-      <h3 id="overview-windows-heading">Latest measurements and weekly comparison</h3>
-      <div id="overview-windows">Loading…</div>
-    </section>
 
     <section aria-labelledby="nutrition-heading">
       <h2 id="nutrition-heading">Synthetic nutrition summary</h2>
@@ -82,15 +96,6 @@
       <p id="cardio-context">Loading…</p>
       <h3 id="cardio-windows-heading">Heart-rate sample averages and coverage</h3>
       <div id="cardio-windows">Loading…</div>
-    </section>
-    <section aria-labelledby="metric-chart-heading">
-      <h2 id="metric-chart-heading">Daily measurements</h2>
-      <label for="daily-metric">Metric</label>
-      <select id="daily-metric"></select>
-      <a id="daily-export" hidden>Download daily CSV</a>
-      <p id="daily-status" role="status"></p>
-      <div id="daily-chart"></div>
-      <details><summary id="daily-data-heading">Daily values and provenance</summary><div id="daily-data"></div></details>
     </section>
     <section aria-labelledby="photo-heading">
       <h2 id="photo-heading">Private photo comparison</h2>

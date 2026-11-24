@@ -1,5 +1,9 @@
 # Engineering learnings
 
+### 2026-11-25 — Dashboard redesign
+
+- Chromium verified that the navigation changes from a desktop rail to a compact header and that the overview tiles update after a fixture import.
+
 ### 2026-11-24 — Lifestyle and release rehearsal
 
 - A synthetic PNG decoded from a browser object URL under the app CSP. Keyboard clearing removed both the preview and the selected file; the feature requires no upload or store changes.

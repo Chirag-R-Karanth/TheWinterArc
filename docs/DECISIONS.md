@@ -1,5 +1,9 @@
 # Architecture decision log
 
+### 2026-11-25 — Dashboard hierarchy
+
+Put latest measured values and the daily chart ahead of import controls. Use the Lyfta references for graphite surfaces, compact metrics, and blue chart accents. Keep weekly detail and source records available through disclosure controls.
+
 ### 2026-11-24 — Local comparison and daily export
 
 Use tab-scoped object URLs for photo comparison. The server does not receive photo bytes or persist paths; backups intentionally exclude previews. Export daily CSV from the same dated and normalized data as the chart, with measurement IDs and blank cells for missing values. Retain the loopback launcher for the fixture release; desktop packaging remains unevaluated.
