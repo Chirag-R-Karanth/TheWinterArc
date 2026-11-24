@@ -1,13 +1,77 @@
-:root { color-scheme: light dark; font: 100%/1.55 system-ui, sans-serif; }
-body { margin: 0 auto; max-width: 72rem; padding: 1rem; }
-h1, h2 { line-height: 1.2; }
-section { border: 1px solid GrayText; border-radius: .5rem; padding: 1rem; margin-block: 1rem; }
-form { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-block: .75rem; }
-input { max-width: 100%; }
-button, input { font: inherit; }
-button { padding: .3rem .65rem; }
+:root {
+  color-scheme: dark;
+  font: 100%/1.5 system-ui, sans-serif;
+  --bg: #101116; --rail: #13151c; --panel: #1a1d26; --raised: #222632;
+  --edge: #333949; --text: #f2f4fb; --muted: #aab3c7; --accent: #96bcff;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--text); display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); }
+a { color: var(--accent); text-underline-offset: .2em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.skip { position: fixed; top: .75rem; left: .75rem; z-index: 2; padding: .6rem; background: var(--panel); }
+.skip:not(:focus) { clip-path: inset(50%); }
+.rail { position: sticky; top: 0; height: 100dvh; overflow: auto; padding: 1.35rem 1rem; border-right: 1px solid var(--edge); background: var(--rail); }
+.brand { display: flex; align-items: center; gap: .65rem; color: var(--text); font-weight: 750; text-decoration: none; }
+.mark { display: grid; place-items: center; width: 2.35rem; aspect-ratio: 1; border-radius: .7rem; background: var(--accent); color: #101a30; }
+.brand small { display: block; color: var(--muted); font-size: .57rem; letter-spacing: .1em; }
+.rail nav { display: grid; gap: .2rem; margin-top: 2rem; }
+.rail nav a { padding: .55rem .7rem; border-radius: .5rem; color: var(--muted); font-size: .9rem; text-decoration: none; }
+.rail nav a:hover, .rail nav a[aria-current] { background: var(--raised); color: var(--text); }
+.rail-note { padding: .65rem; margin-top: 1.5rem; border-top: 1px solid var(--edge); font-size: .75rem; }
+main { width: min(100%, 94rem); margin-inline: auto; padding: clamp(1rem, 3vw, 3rem); overflow-wrap: anywhere; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.1; letter-spacing: -.055em; }
+h2 { font-size: 1.3rem; letter-spacing: -.025em; }
+h3 { font-size: .95rem; }
+p { color: var(--muted); }
+section > p, h3 { margin-top: .55rem; }
+.masthead, .panel-head, .mast-actions, .chart-controls { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: .85rem; }
+.masthead { margin-bottom: 2rem; }
+.masthead h1 + p { margin-top: .6rem; }
+.eyebrow { color: var(--accent); font-size: .68rem; font-weight: 750; letter-spacing: .16em; margin-bottom: .3rem; }
+.badge, .action { border-radius: 2rem; padding: .45rem .8rem; font-size: .8rem; font-weight: 700; }
+.badge { border: 1px solid var(--edge); color: var(--muted); }
+.action { background: var(--accent); color: #101a30; text-decoration: none; }
+section { min-width: 0; margin-bottom: 1rem; padding: clamp(.85rem, 2vw, 1.45rem); border: 1px solid var(--edge); border-radius: 1rem; background: var(--panel); }
+section.overview { border: 0; padding: 0; background: transparent; }
+[id] { scroll-margin-top: 1rem; }
+.metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin: .85rem 0; }
+.metric-tile { --tone: var(--accent); padding: 1rem; border: 1px solid var(--edge); border-radius: .85rem; background: var(--panel); }
+.metric-tile[data-metric="sleep_duration"] { --tone: #c2abff; }
+.metric-tile[data-metric="nutrition_energy"] { --tone: #8dd9b5; }
+.metric-tile[data-metric="heart_rate"] { --tone: #ffa9ae; }
+.metric-tile h3 { color: var(--tone); margin: 0; }
+.metric-tile p { font-size: .8rem; }
+.metric-tile .metric-value { color: var(--text); font-size: clamp(1.3rem, 2.6vw, 2.2rem); font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.04em; margin: .35rem 0; overflow-wrap: anywhere; }
+form { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-block: .75rem; }
+button, input, select { max-width: 100%; color: var(--text); background: var(--raised); border: 1px solid var(--edge); border-radius: .45rem; font: inherit; padding: .35rem .55rem; }
+button, summary { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+label, summary { font-weight: 650; font-size: .85rem; }
+details { margin-top: .75rem; }
+summary { color: var(--accent); padding-block: .3rem; }
 #status { min-height: 1.55em; }
-table { border-collapse: collapse; width: 100%; }
-th, td { padding: .5rem; text-align: left; border-bottom: 1px solid GrayText; overflow-wrap: anywhere; }
-.photo-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+#daily-chart, #correlation-plot { margin-block: .85rem; color: var(--accent); }
+#daily-chart:empty, #correlation-plot:empty { margin: 0; }
+#daily-chart svg, #correlation-plot svg { display: block; width: 100%; max-height: 22rem; background: var(--bg); border: 1px solid var(--edge); border-radius: .65rem; }
+table { border-collapse: collapse; width: 100%; table-layout: fixed; font-size: .85rem; }
+th, td { padding: .5rem; text-align: left; border-bottom: 1px solid var(--edge); overflow-wrap: anywhere; }
+th { color: var(--muted); }
+.photo-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin-block: .8rem; }
 .photo-comparison img { max-width: 100%; max-height: 28rem; object-fit: contain; }
+.photo-comparison > div { min-width: 0; }
+@media (max-width: 72rem) { .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 50rem) {
+  body { display: block; }
+  .rail { position: static; height: auto; border: 0; border-bottom: 1px solid var(--edge); }
+  .rail nav { display: flex; flex-wrap: wrap; margin-top: .75rem; }
+  .rail-note { display: none; }
+}
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: light; --bg: #eff2f8; --rail: #f9fafe; --panel: #fff; --raised: #e9eef9; --edge: #cbd3e3; --text: #192338; --muted: #4d5d74; --accent: #2355a6; }
+  .mark, .action { color: white; }
+  .metric-tile[data-metric="sleep_duration"] { --tone: #6446a2; }
+  .metric-tile[data-metric="nutrition_energy"] { --tone: #216d4c; }
+  .metric-tile[data-metric="heart_rate"] { --tone: #a63952; }
+}

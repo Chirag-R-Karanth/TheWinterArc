@@ -1,6 +1,15 @@
 const api = "/api/v1";
 const get = (id) => document.getElementById(id);
 const controls = document.querySelectorAll("button, input, select");
+function showCurrentSection() {
+  const hash = location.hash || "#overview-heading";
+  for (const link of document.querySelectorAll(".rail nav a")) {
+    if (link.hash === hash) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  }
+}
+addEventListener("hashchange", showCurrentSection);
+showCurrentSection();
 const example = JSON.stringify([
   {metric: "weight", value: 73, unit: "kg", observed_at: "2025-12-25T08:00:00Z"},
   {metric: "weight", value: 72.5, unit: "kg", observed_at: "2026-01-01T08:00:00Z"},
@@ -291,6 +300,21 @@ function renderOverview({as_of_date: date, timezone, metrics}) {
   get("overview-context").textContent = date ? `Common reporting week ending ${date} (${timezone}).`
     : `No supported overview measurements in ${timezone}.`;
   const weekly = (window, unit) => `${measurement(window.average, unit)} (${coverage(window)})`;
+  get("overview-cards").replaceChildren(...Object.entries(labels).map(([metric, label]) => {
+    const entry = metrics[metric];
+    const card = document.createElement("article");
+    card.className = "metric-tile";
+    card.dataset.metric = metric;
+    const heading = document.createElement("h3");
+    heading.textContent = label;
+    const value = document.createElement("p");
+    value.className = "metric-value";
+    value.textContent = entry?.latest ? measurement(entry.latest.value, entry.latest.unit) : "—";
+    const note = document.createElement("p");
+    note.textContent = entry?.latest ? `${coverage(entry.current)} this week` : "No measurements yet";
+    card.append(heading, value, note);
+    return card;
+  }));
   table("overview-windows", ["Metric", "Latest valid observation (UTC)", "Current week", "Prior week", "Change"],
     date ? Object.entries(metrics).map(([metric, {unit, latest, current, previous, change}]) => [
       labels[metric], latest ? `${measurement(latest.value, latest.unit)} · ${latest.observed_at} · Fixture #${latest.import_id}`
@@ -303,6 +327,7 @@ async function refreshPanel(id, path, render, emptyOnError, contextId) {
     render(await request(path));
   } catch (error) {
     get(id).textContent = emptyOnError;
+    if (id === "overview-windows") get("overview-cards").replaceChildren();
     if (contextId) get(contextId).textContent = error.message;
     throw error;
   }

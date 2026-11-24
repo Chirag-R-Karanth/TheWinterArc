@@ -47,6 +47,7 @@ async function until(expression) {
 
 try {
   await send("Runtime.enable");
+  await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
   await send("Page.navigate", {url: app});
   await until("document.querySelector('#status')?.textContent === 'Local data loaded.'");
   await send("Network.enable");
@@ -70,6 +71,8 @@ try {
   await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
   await until("document.querySelector('#preview-before').hidden && !document.querySelector('#photo-before').files.length");
   assert.match(await evaluate("document.querySelector('#daily-status').textContent"), /0 observed days/);
+  assert.equal(await evaluate("document.querySelectorAll('.metric-tile').length"), 4);
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.rail')).position"), "sticky");
   await evaluate("document.querySelector('#correlation-form button').click()");
   await until("document.querySelector('#correlation-status').textContent.includes('0 paired days')");
 
@@ -86,6 +89,7 @@ try {
   })()`);
   await until("document.querySelector('#status').textContent.includes('(24 rows).') && !document.querySelector('#fixture').disabled");
   assert.equal(await evaluate("document.querySelectorAll('#daily-chart svg circle').length"), 12);
+  assert.equal(await evaluate("document.querySelector('[data-metric=weight] .metric-value').textContent"), "66 kg");
   assert.equal(await evaluate("document.querySelectorAll('#daily-data tbody tr').length"), 12);
   assert.match(await evaluate("document.querySelector('#daily-export').getAttribute('href')"),
     /\/weight\/daily\.csv\?timezone=UTC$/);
@@ -110,6 +114,9 @@ try {
   })()`);
   await until("document.querySelector('#correlation-status').textContent.includes('Choose an inclusive X date range')");
   assert.equal(await evaluate("document.querySelectorAll('#correlation-plot svg').length"), 0);
+  await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: false});
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.rail')).position"), "static");
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('main *')].filter(e => e.getBoundingClientRect().right > innerWidth + 1).map(e => [e.tagName, e.id, Math.round(e.getBoundingClientRect().right)]).slice(0, 12)`), []);
   assert.deepEqual(exceptions, []);
   console.log("Chromium: local photo preview, keyboard clear, fixture upload, daily chart, CSV link, lagged R fit, and validation passed.");
 } finally {
