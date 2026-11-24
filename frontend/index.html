@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TheWinterArc V2</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>TheWinterArc V2</h1>
+    <p>Synthetic fixtures only. No live sources connected.</p>
+  </header>
+  <main>
+    <section aria-labelledby="fixture-heading">
+      <h2 id="fixture-heading">Import a synthetic fixture</h2>
+      <p>Load a bundled example or choose a synthetic JSON file (up to 8 MiB). Do not select personal data.</p>
+      <button id="sample" type="button">Import example fixture</button>
+      <form id="upload">
+        <label for="fixture">Synthetic JSON file</label>
+        <input id="fixture" type="file" accept=".json,application/json" required>
+        <button type="submit">Import file</button>
+      </form>
+      <button id="refresh" type="button">Refresh</button>
+      <p id="status" role="status">Loading local data…</p>
+    </section>
+    <section aria-labelledby="sources-heading">
+      <h2 id="sources-heading">Provider sources</h2>
+      <div id="sources">Loading…</div>
+    </section>
+    <section aria-labelledby="timezone-heading">
+      <h2 id="timezone-heading">Summary timezone</h2>
+      <form id="summary-timezone">
+        <label for="timezone">Body, sleep and nutrition timezone (IANA name)</label>
+        <input id="timezone" name="timezone" value="UTC" placeholder="America/New_York" required>
+        <button type="submit">Apply timezone</button>
+      </form>
+    </section>
+    <section aria-labelledby="body-heading">
+      <h2 id="body-heading">Synthetic body summary</h2>
+      <p id="body-context">Loading…</p>
+      <h3 id="body-windows-heading">Window averages and coverage</h3>
+      <p>Coverage counts calendar days with valid measurements. Averages give each observed day equal weight.
+        Change compares the current window with the preceding window of the same length.</p>
+      <div id="body-windows">Loading…</div>
+    </section>
+    <section aria-labelledby="sleep-heading">
+      <h2 id="sleep-heading">Synthetic sleep duration</h2>
+      <p>Fixture daily totals only. The timezone assigns each timestamp to a calendar day.
+        Multiple totals on the same day are averaged, not added. Windows end on the latest
+        supported fixture date and average only days with valid totals.</p>
+      <p>No session timing, consistency, stages, hypnogram, resting heart rate, HRV or readiness.
+        These fixtures do not verify sleep data from any provider.</p>
+      <p id="sleep-context">Loading…</p>
+      <h3 id="sleep-windows-heading">Duration averages and coverage</h3>
+      <div id="sleep-windows">Loading…</div>
+    </section>
+    <section aria-labelledby="nutrition-heading">
+      <h2 id="nutrition-heading">Synthetic nutrition summary</h2>
+      <p>Fixture daily totals only. Repeated totals on the same local day are averaged.
+        Coverage counts days with a valid total for each nutrient; it does not tell you whether every meal was logged.
+        Missing days are excluded from averages. Recorded zeros count.</p>
+      <p id="nutrition-context">Loading…</p>
+      <h3 id="nutrition-windows-heading">Nutrition averages and coverage</h3>
+      <div id="nutrition-windows">Loading…</div>
+    </section>
+    <section aria-labelledby="series-heading">
+      <h2 id="series-heading">Synthetic measurements</h2>
+      <p>Missing values are shown as “Missing,” never as zero. Times are UTC.</p>
+      <div id="series">Loading…</div>
+    </section>
+    <section aria-labelledby="imports-heading">
+      <h2 id="imports-heading">Fixture import history</h2>
+      <div id="imports">Loading…</div>
+    </section>
+  </main>
+</body>
+</html>

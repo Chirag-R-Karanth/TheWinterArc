@@ -1,0 +1,11 @@
+:root { color-scheme: light dark; font: 100%/1.55 system-ui, sans-serif; }
+body { margin: 0 auto; max-width: 72rem; padding: 1rem; }
+h1, h2 { line-height: 1.2; }
+section { border: 1px solid GrayText; border-radius: .5rem; padding: 1rem; margin-block: 1rem; }
+form { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-block: .75rem; }
+input { max-width: 100%; }
+button, input { font: inherit; }
+button { padding: .3rem .65rem; }
+#status { min-height: 1.55em; }
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: .5rem; text-align: left; border-bottom: 1px solid GrayText; overflow-wrap: anywhere; }
