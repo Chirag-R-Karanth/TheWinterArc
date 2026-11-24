@@ -124,6 +124,8 @@ async function refreshDaily() {
   const seq = ++dailyRequest;
   const selected = get("daily-metric").value;
   const query = new URLSearchParams({timezone: get("timezone").value.trim()});
+  const download = get("daily-export");
+  download.hidden = true;
   get("daily-status").textContent = "Loading daily measurements…";
   get("daily-chart").replaceChildren();
   get("daily-data").replaceChildren();
@@ -137,6 +139,8 @@ async function refreshDaily() {
   if (seq !== dailyRequest) return;
   const {daily, unit, timezone} = summary;
   if (get("daily-metric").value !== selected || get("timezone").value.trim() !== timezone) return;
+  download.href = `${api}/metrics/${encodeURIComponent(selected)}/daily.csv?${query}`;
+  download.hidden = false;
   const observed = daily.filter(({value}) => value !== null && Number.isFinite(value));
   const label = `${metricName(selected)} (${unit}), daily means in ${timezone}`;
   get("daily-status").textContent = `${label}. ${observed.length} observed days; gaps are not filled.`;
@@ -146,6 +150,43 @@ async function refreshDaily() {
   table("daily-data", ["Date", label, "Valid samples", "Measurement IDs"], daily.map((p) =>
     [p.date, measurement(p.value, unit), p.sample_count, p.measurement_ids.join(", ")]), "No supported measurements.");
 }
+
+const photoSlots = ["before", "after"].map((slot) => {
+  const input = get(`photo-${slot}`);
+  const image = get(`preview-${slot}`);
+  const status = get("photo-status");
+  let url;
+  function release() {
+    image.hidden = true;
+    image.removeAttribute("src");
+    if (url) URL.revokeObjectURL(url);
+    url = undefined;
+  }
+  input.addEventListener("change", () => {
+    release();
+    status.textContent = "";
+    const [file] = input.files;
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 20 * 1024 * 1024) {
+      status.textContent = "Choose a JPEG, PNG or WebP file no larger than 20 MiB.";
+      input.value = "";
+      return;
+    }
+    url = URL.createObjectURL(file);
+    image.src = url;
+    image.hidden = false;
+  });
+  image.addEventListener("error", () => {
+    release();
+    input.value = "";
+    status.textContent = "This photo could not be displayed.";
+  });
+  return () => { release(); input.value = ""; };
+});
+get("photo-clear").addEventListener("click", () => {
+  photoSlots.forEach((clear) => clear());
+  get("photo-status").textContent = "Previews cleared.";
+});
 
 async function refreshMetricRegistry() {
   if (!registry) {

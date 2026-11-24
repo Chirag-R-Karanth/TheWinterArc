@@ -1,5 +1,10 @@
 # Engineering learnings
 
+### 2026-11-24 — Lifestyle and release rehearsal
+
+- A synthetic PNG decoded from a browser object URL under the app CSP. Keyboard clearing removed both the preview and the selected file; the feature requires no upload or store changes.
+- CSV comparison with the daily API distinguished a missing cell from zero and verified that measurement IDs survived export. Fedora 43 launched the app from a newly installed virtual environment.
+
 ### 2026-11-24 — Daily series and correlation
 
 - A timezone shift can change which dates pair even when the underlying measurements are unchanged. Test calendar-day alignment and reverse the metric order and lag to check paired counts.

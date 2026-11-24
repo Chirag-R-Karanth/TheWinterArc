@@ -49,6 +49,26 @@ try {
   await send("Runtime.enable");
   await send("Page.navigate", {url: app});
   await until("document.querySelector('#status')?.textContent === 'Local data loaded.'");
+  await send("Network.enable");
+  await send("Network.setBlockedURLs", {urls: ["https://*"]});
+  await evaluate(`(() => {
+    const canvas = document.createElement('canvas');
+    canvas.toBlob((blob) => {
+      const input = document.querySelector('#photo-before');
+      const data = new DataTransfer();
+      data.items.add(new File([blob], 'synthetic.png', {type: 'image/png'}));
+      input.files = data.files;
+      input.dispatchEvent(new Event('change'));
+    });
+  })()`);
+  await until("document.querySelector('#preview-before').naturalWidth > 0");
+  assert.match(await evaluate("document.querySelector('#preview-before').src"), /^blob:/);
+  await evaluate("document.querySelector('#photo-after').focus()");
+  await send("Input.dispatchKeyEvent", {type: "rawKeyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9});
+  assert.equal(await evaluate("document.activeElement.id"), "photo-clear");
+  await send("Input.dispatchKeyEvent", {type: "keyDown", key: "Enter", code: "Enter", text: "\r", windowsVirtualKeyCode: 13});
+  await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
+  await until("document.querySelector('#preview-before').hidden && !document.querySelector('#photo-before').files.length");
   assert.match(await evaluate("document.querySelector('#daily-status').textContent"), /0 observed days/);
   await evaluate("document.querySelector('#correlation-form button').click()");
   await until("document.querySelector('#correlation-status').textContent.includes('0 paired days')");
@@ -67,6 +87,8 @@ try {
   await until("document.querySelector('#status').textContent.includes('(24 rows).') && !document.querySelector('#fixture').disabled");
   assert.equal(await evaluate("document.querySelectorAll('#daily-chart svg circle').length"), 12);
   assert.equal(await evaluate("document.querySelectorAll('#daily-data tbody tr').length"), 12);
+  assert.match(await evaluate("document.querySelector('#daily-export').getAttribute('href')"),
+    /\/weight\/daily\.csv\?timezone=UTC$/);
 
   await evaluate(`(() => {
     document.querySelector('#correlation-y').value = 'heart_rate';
@@ -89,7 +111,7 @@ try {
   await until("document.querySelector('#correlation-status').textContent.includes('Choose an inclusive X date range')");
   assert.equal(await evaluate("document.querySelectorAll('#correlation-plot svg').length"), 0);
   assert.deepEqual(exceptions, []);
-  console.log("Chromium: empty states, fixture upload, daily chart, lagged R fit, and validation passed.");
+  console.log("Chromium: local photo preview, keyboard clear, fixture upload, daily chart, CSV link, lagged R fit, and validation passed.");
 } finally {
   ws.close();
 }

@@ -1,5 +1,5 @@
 # Phase 05 — Lifestyle
-Status: NOT VERIFIED / NOT STARTED in this documentation bundle.
+Status: Partial; tab-local photo comparison verified. Lifestyle imports await provider samples, and the persistent gallery is open.
 ## Prerequisites
 Previous phase gate verified or explicitly documented as blocked; do not bypass dependencies.
 ## Implementation

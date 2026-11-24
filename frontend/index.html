@@ -87,9 +87,20 @@
       <h2 id="metric-chart-heading">Daily measurements</h2>
       <label for="daily-metric">Metric</label>
       <select id="daily-metric"></select>
+      <a id="daily-export" hidden>Download daily CSV</a>
       <p id="daily-status" role="status"></p>
       <div id="daily-chart"></div>
       <details><summary id="daily-data-heading">Daily values and provenance</summary><div id="daily-data"></div></details>
+    </section>
+    <section aria-labelledby="photo-heading">
+      <h2 id="photo-heading">Private photo comparison</h2>
+      <p>Compare two local JPEG, PNG or WebP files (up to 20 MiB each). Previews stay in this tab and are never imported or included in backups.</p>
+      <div class="photo-comparison">
+        <div><label for="photo-before">Earlier photo</label><input id="photo-before" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview-before" alt="Earlier photo preview" hidden></div>
+        <div><label for="photo-after">Later photo</label><input id="photo-after" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview-after" alt="Later photo preview" hidden></div>
+      </div>
+      <button id="photo-clear" type="button">Clear previews</button>
+      <p id="photo-status" role="status"></p>
     </section>
     <section aria-labelledby="correlation-heading">
       <h2 id="correlation-heading">Correlation lab</h2>

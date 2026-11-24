@@ -1,5 +1,9 @@
 # Architecture decision log
 
+### 2026-11-24 — Local comparison and daily export
+
+Use tab-scoped object URLs for photo comparison. The server does not receive photo bytes or persist paths; backups intentionally exclude previews. Export daily CSV from the same dated and normalized data as the chart, with measurement IDs and blank cells for missing values. Retain the loopback launcher for the fixture release; desktop packaging remains unevaluated.
+
 ### 2026-11-24 — Daily registry and correlation
 
 Reuse the core metric normalizers for daily charts and pairwise analysis. Align X on local day `t` with Y on `t + lag`; omit missing pairs and retain measurement IDs. Run exploratory calculations on demand in base R without persisting results or substituting a different engine when R is unavailable. See the [correlation build report](build-reports/2026-11-24-phase-04-correlation.md).
