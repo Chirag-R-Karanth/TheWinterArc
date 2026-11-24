@@ -32,7 +32,7 @@
     <section aria-labelledby="timezone-heading">
       <h2 id="timezone-heading">Summary timezone</h2>
       <form id="summary-timezone">
-        <label for="timezone">Body, sleep and nutrition timezone (IANA name)</label>
+        <label for="timezone">Summary timezone (IANA name)</label>
         <input id="timezone" name="timezone" value="UTC" placeholder="America/New_York" required>
         <button type="submit">Apply timezone</button>
       </form>
@@ -56,6 +56,15 @@
       <h3 id="sleep-windows-heading">Duration averages and coverage</h3>
       <div id="sleep-windows">Loading…</div>
     </section>
+    <section aria-labelledby="overview-heading">
+      <h2 id="overview-heading">Overview</h2>
+      <p>Latest valid observations retain their recorded units. Weekly means use only observed days.
+        <a href="#sources-heading">Provider discovery status</a></p>
+      <p id="overview-context">Loading…</p>
+      <h3 id="overview-windows-heading">Latest measurements and weekly comparison</h3>
+      <div id="overview-windows">Loading…</div>
+    </section>
+
     <section aria-labelledby="nutrition-heading">
       <h2 id="nutrition-heading">Synthetic nutrition summary</h2>
       <p>Fixture daily totals only. Repeated totals on the same local day are averaged.
@@ -64,6 +73,15 @@
       <p id="nutrition-context">Loading…</p>
       <h3 id="nutrition-windows-heading">Nutrition averages and coverage</h3>
       <div id="nutrition-windows">Loading…</div>
+    </section>
+
+    <section aria-labelledby="cardio-heading">
+      <h2 id="cardio-heading">Cardio: measured heart rate</h2>
+      <p>Daily means of recorded samples, with each observed day weighted equally in window averages.
+        Session metrics and heart-rate zones require additional inputs.</p>
+      <p id="cardio-context">Loading…</p>
+      <h3 id="cardio-windows-heading">Heart-rate sample averages and coverage</h3>
+      <div id="cardio-windows">Loading…</div>
     </section>
     <section aria-labelledby="series-heading">
       <h2 id="series-heading">Synthetic measurements</h2>

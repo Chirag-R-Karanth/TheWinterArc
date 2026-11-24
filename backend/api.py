@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.concurrency import run_in_threadpool
 
-from .analytics import body_summary, nutrition_summary, sleep_duration_summary
+from .analytics import body_summary, cardio_summary, nutrition_summary, overview_summary, sleep_duration_summary
 from .providers import sources
 from .store import Store
 
@@ -117,6 +117,20 @@ def summarize_nutrition(request: Request, timezone: str = "UTC"):
     """Return daily nutrition totals and 7/30-day observed-day averages."""
     zone = _timezone_key(timezone)
     return nutrition_summary(request.app.state.store.series(), zone)
+
+
+@app.get("/api/v1/cardio/summary")
+def summarize_cardio(request: Request, timezone: str = "UTC"):
+    """Return daily heart-rate sample means and observed-day windows."""
+    zone = _timezone_key(timezone)
+    return cardio_summary(request.app.state.store.series(), zone)
+
+
+@app.get("/api/v1/overview/summary")
+def summarize_overview(request: Request, timezone: str = "UTC"):
+    """Return latest valid observations and comparable weekly windows."""
+    zone = _timezone_key(timezone)
+    return overview_summary(request.app.state.store.series(), zone)
 
 
 @app.get("/api/v1/imports")

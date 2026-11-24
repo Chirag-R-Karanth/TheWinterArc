@@ -12,6 +12,7 @@ const example = JSON.stringify([
   {metric: "nutrition_energy", value: null, unit: "kcal", observed_at: "2026-01-02T08:00:00Z"},
   {metric: "nutrition_protein", value: 90, unit: "g", observed_at: "2026-01-01T08:00:00Z"},
   {metric: "nutrition_fibre", value: 0, unit: "g", observed_at: "2026-01-01T08:00:00Z"},
+  {metric: "heart_rate", value: 72, unit: "bpm", observed_at: "2026-01-01T08:00:00Z"},
 ]);
 
 async function request(path, options) {
@@ -88,11 +89,35 @@ function renderNutrition({as_of_date: date, timezone, metrics}) {
       ])) : [], "No nutrition averages yet.");
 }
 
-async function refreshPanel(id, path, render, emptyOnError) {
+function renderCardio({as_of_date: date, timezone, metrics}) {
+  const {unit, windows} = metrics.heart_rate;
+  get("cardio-context").textContent = date ? `Windows ending ${date} (${timezone}).`
+    : `No supported heart-rate samples in ${timezone}.`;
+  table("cardio-windows", ["Window", "Average of daily sample means", "Coverage", "Valid samples"],
+    date ? Object.entries(windows).map(([period, window]) => [
+      period, measurement(window.average, unit), coverage(window), window.sample_count,
+    ]) : [], "No heart-rate averages yet.");
+}
+
+function renderOverview({as_of_date: date, timezone, metrics}) {
+  const labels = {weight: "Weight", sleep_duration: "Sleep duration", nutrition_energy: "Energy",
+    heart_rate: "Heart rate"};
+  get("overview-context").textContent = date ? `Common reporting week ending ${date} (${timezone}).`
+    : `No supported overview measurements in ${timezone}.`;
+  const weekly = (window, unit) => `${measurement(window.average, unit)} (${coverage(window)})`;
+  table("overview-windows", ["Metric", "Latest valid observation (UTC)", "Current week", "Prior week", "Change"],
+    date ? Object.entries(metrics).map(([metric, {unit, latest, current, previous, change}]) => [
+      labels[metric], latest ? `${measurement(latest.value, latest.unit)} · ${latest.observed_at} · Fixture #${latest.import_id}`
+        : "Unavailable", weekly(current, unit), weekly(previous, unit), measurement(change, unit),
+    ]) : [], "No overview measurements yet.");
+}
+
+async function refreshPanel(id, path, render, emptyOnError, contextId) {
   try {
     render(await request(path));
   } catch (error) {
     get(id).textContent = emptyOnError;
+    if (contextId) get(contextId).textContent = error.message;
     throw error;
   }
 }
@@ -100,6 +125,10 @@ async function refreshPanel(id, path, render, emptyOnError) {
 async function refresh() {
   const query = new URLSearchParams({timezone: get("timezone").value.trim()});
   const results = await Promise.allSettled([
+    refreshPanel("overview-windows", `/overview/summary?${query}`, renderOverview,
+      "Overview unavailable.", "overview-context"),
+    refreshPanel("cardio-windows", `/cardio/summary?${query}`, renderCardio,
+      "Heart-rate averages unavailable.", "cardio-context"),
     refreshPanel("series", "/series", (series) => table("series",
       ["Observed (UTC)", "Metric", "Value", "Unit", "Fixture import"],
       series.map((row) => [row.observed_at, row.metric, row.value ?? "Missing", row.unit, `#${row.import_id}`]),

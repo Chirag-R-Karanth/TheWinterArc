@@ -155,21 +155,31 @@ def nutrition_summary(rows, timezone="UTC"):
     counts days with valid rows, not completeness of food logging. The latest
     supported metric/unit row (even if missing) anchors all nutrient windows.
     """
+    return _scalar_summary(rows, timezone, _NUTRITION, lambda value: value >= 0)
+
+
+def cardio_summary(rows, timezone="UTC"):
+    """Summarize measured HR samples, not continuous or session-average HR."""
+    return _scalar_summary(rows, timezone, {"heart_rate": ("bpm", {"bpm": 1})},
+                           lambda value: value > 0)
+
+
+def _scalar_summary(rows, timezone, registry, valid):
     zone = ZoneInfo(timezone)
-    grouped = {metric: {} for metric in _NUTRITION}
+    grouped = {metric: {} for metric in registry}
     anchor = None
     for row in rows:
         metric = row["metric"]
-        if metric not in _NUTRITION:
+        if metric not in registry:
             continue
-        factor = _NUTRITION[metric][1].get(row["unit"])
+        factor = registry[metric][1].get(row["unit"])
         if factor is None:
             continue
         day = datetime.fromisoformat(row["observed_at"].replace("Z", "+00:00")).astimezone(zone).date().toordinal()
         anchor = day if anchor is None else max(anchor, day)
         samples = grouped[metric].setdefault(day, [])
         value = row["value"]
-        if value is not None and value >= 0:
+        if value is not None and valid(value):
             samples.append((row["id"], value * factor))
 
     metrics = {}
@@ -184,13 +194,55 @@ def nutrition_summary(rows, timezone="UTC"):
             for day, samples in sorted(dates.items())
         }
         metrics[metric] = {
-            "unit": _NUTRITION[metric][0],
+            "unit": registry[metric][0],
             "daily": list(daily.values()),
             "windows": {f"{days}d": _window(daily, anchor, days) for days in (7, 30)},
         }
     return {
         "method_version": 1,
         "timezone": zone.key,
+        "as_of_date": date.fromordinal(anchor).isoformat() if anchor is not None else None,
+        "metrics": metrics,
+    }
+
+
+def overview_summary(rows, timezone="UTC"):
+    """Compare two common calendar weeks and retain latest valid raw observations."""
+    body = body_summary(rows, timezone)
+    sleep = sleep_duration_summary(rows, timezone)
+    nutrition = nutrition_summary(rows, timezone)
+    cardio = cardio_summary(rows, timezone)
+    selected = {
+        "weight": body["metrics"]["weight"],
+        "sleep_duration": sleep,
+        "nutrition_energy": nutrition["metrics"]["nutrition_energy"],
+        "heart_rate": cardio["metrics"]["heart_rate"],
+    }
+    daily = {
+        metric: {date.fromisoformat(point["date"]).toordinal(): point for point in entry["daily"]}
+        for metric, entry in selected.items()
+    }
+    anchor = max((day for points in daily.values() for day in points), default=None)
+    by_id = {row["id"]: row for row in rows}
+    metrics = {}
+    for metric, points in daily.items():
+        valid_ids = (row_id for point in points.values() for row_id in point["measurement_ids"])
+        latest = max((by_id[row_id] for row_id in valid_ids),
+                     key=lambda row: (row["observed_at"], row["id"]), default=None)
+        current = _window(points, anchor, 7)
+        previous = _window(points, anchor - 7 if anchor is not None else None, 7)
+        a, b = current["average"], previous["average"]
+        metrics[metric] = {
+            "unit": selected[metric]["unit"],
+            "latest": {key: latest[key] for key in
+                       ("id", "observed_at", "value", "unit", "import_id")} if latest else None,
+            "current": current,
+            "previous": previous,
+            "change": a - b if a is not None and b is not None else None,
+        }
+    return {
+        "method_version": 1,
+        "timezone": timezone,
         "as_of_date": date.fromordinal(anchor).isoformat() if anchor is not None else None,
         "metrics": metrics,
     }

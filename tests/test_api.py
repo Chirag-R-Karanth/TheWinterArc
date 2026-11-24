@@ -222,6 +222,57 @@ class APISmokeTest(unittest.TestCase):
         self.assertEqual((local_week["average"], local_week["observed_days"]), (2250, 2))
         self.assertEqual(self.http("GET", "/api/v1/nutrition/summary?timezone=Not%2FA_Zone")[0], 422)
 
+    def test_cardio_summary_over_loopback(self):
+        self.assertIsNone(self.read_json("cardio/summary")["as_of_date"])
+        payload = [dict(metric="heart_rate", value=value, unit=unit, observed_at=when)
+                   for value, unit, when in [
+                       (60, "bpm", "2026-01-01T23:00:00Z"),
+                       (100, "bpm", "2026-01-02T01:00:00Z"),
+                       (120, "bpm", "2026-01-02T12:00:00Z"),
+                       (0, "bpm", "2026-01-03T12:00:00Z"),
+                       (80, "Hz", "2026-01-10T12:00:00Z"),
+                   ]]
+        self.assertEqual(self.post(json.dumps(payload).encode())[0], 200)
+        utc = self.read_json("cardio/summary")
+        self.assertEqual(utc["as_of_date"], "2026-01-03")
+        hr = utc["metrics"]["heart_rate"]
+        self.assertEqual([day["value"] for day in hr["daily"]], [60, 110, None])
+        week = hr["windows"]["7d"]
+        self.assertEqual((week["average"], week["observed_days"], week["sample_count"]), (85, 2, 3))
+        local = self.read_json("cardio/summary?timezone=America%2FNew_York")
+        self.assertEqual(local["metrics"]["heart_rate"]["windows"]["7d"]["average"], 100)
+        self.assertEqual(self.http("GET", "/api/v1/cardio/summary?timezone=Not%2FA_Zone")[0], 422)
+
+    def test_overview_summary_over_loopback(self):
+        empty = self.read_json("overview/summary")
+        self.assertIsNone(empty["as_of_date"])
+        self.assertIsNone(empty["metrics"]["weight"]["latest"])
+        payload = [dict(metric=metric, value=value, unit=unit, observed_at=when)
+                   for metric, value, unit, when in [
+                       ("weight", 70, "kg", "2026-01-01T12:00:00Z"),
+                       ("weight", 72, "kg", "2026-01-03T12:00:00Z"),
+                       ("weight", 154, "lb", "2026-01-04T12:00:00Z"),
+                       ("weight", None, "kg", "2026-01-05T12:00:00Z"),
+                       ("sleep_duration", 7, "h", "2026-01-09T01:00:00Z"),
+                       ("nutrition_fibre", 5, "g", "2026-02-01T01:00:00Z"),
+                   ]]
+        self.assertEqual(self.post(json.dumps(payload).encode())[0], 200)
+        overview = self.read_json("overview/summary")
+        self.assertEqual((overview["method_version"], overview["as_of_date"]), (1, "2026-01-09"))
+        weight = overview["metrics"]["weight"]
+        latest = next(row for row in self.read_json("series") if row["unit"] == "lb")
+        self.assertEqual(weight["latest"], {key: latest[key] for key in
+                         ("id", "import_id", "value", "unit", "observed_at")})
+        self.assertEqual(weight["previous"]["average"], 70)
+        self.assertAlmostEqual(weight["current"]["average"], 70.92661249)
+        self.assertAlmostEqual(weight["change"], 0.92661249)
+        self.assertEqual(weight["current"]["observed_days"], 2)
+        self.assertIsNone(overview["metrics"]["sleep_duration"]["change"])
+        local = self.read_json("overview/summary?timezone=America%2FNew_York")
+        self.assertEqual(local["as_of_date"], "2026-01-08")
+        self.assertEqual(local["metrics"]["weight"]["current"]["start_date"], "2026-01-02")
+        self.assertEqual(self.http("GET", "/api/v1/overview/summary?timezone=Not%2FA_Zone")[0], 422)
+
     def test_same_origin_assets(self):
         for path, media_type, marker in [
             ("/", "text/html", b"Synthetic fixtures only"),
@@ -237,3 +288,5 @@ class APISmokeTest(unittest.TestCase):
                 self.assertNotIn("Access-Control-Allow-Origin", headers)
         self.assertIn(b'id="sleep-windows"', self.http("GET", "/")[2])
         self.assertIn(b'id="nutrition-windows"', self.http("GET", "/")[2])
+        self.assertIn(b'id="cardio-windows"', self.http("GET", "/")[2])
+        self.assertIn(b'id="overview-windows"', self.http("GET", "/")[2])
