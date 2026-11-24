@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TheWinterArc V2</title>
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/anatomy.css">
   <script type="module" src="/app.js"></script>
+  <script type="module" src="/anatomy.js"></script>
 </head>
 <body>
   <a class="skip" href="#workspace">Skip to workspace</a>
@@ -14,6 +16,7 @@
     <nav aria-label="Workspace">
       <a href="#overview-heading">Overview</a><a href="#metric-chart-heading">Daily trends</a>
       <a href="#body-heading">Body</a><a href="#sleep-heading">Sleep</a><a href="#nutrition-heading">Nutrition</a><a href="#cardio-heading">Cardio</a>
+      <a href="#anatomy-heading">Anatomy</a>
       <a href="#correlation-heading">Correlation lab</a><a href="#photo-heading">Photo comparison</a><a href="#sources-heading">Sources</a><a href="#fixture-heading">Import data</a>
     </nav>
     <p class="rail-note">Local workspace</p>
@@ -96,6 +99,34 @@
       <p id="cardio-context">Loading…</p>
       <h3 id="cardio-windows-heading">Heart-rate sample averages and coverage</h3>
       <div id="cardio-windows">Loading…</div>
+    </section>
+    <section id="anatomy" class="anatomy" aria-labelledby="anatomy-heading">
+      <div class="panel-head">
+        <div><p class="eyebrow">STRENGTH / MUSCLE MAP</p><h2 id="anatomy-heading">Anatomy explorer</h2></div>
+        <span class="badge">Schematic</span>
+      </div>
+      <p>Select a muscle group on the map or with the region buttons. Highlighting marks selection only.</p>
+      <div class="anatomy-layout">
+        <div class="anatomy-maps" aria-hidden="true" hidden></div>
+        <div class="anatomy-details">
+          <div class="anatomy-controls" role="group" aria-label="Muscle regions" hidden>
+            <button type="button" data-region="chest" aria-pressed="true">Chest</button>
+            <button type="button" data-region="shoulders" aria-pressed="false">Shoulders</button>
+            <button type="button" data-region="arms" aria-pressed="false">Arms</button>
+            <button type="button" data-region="core" aria-pressed="false">Core</button>
+            <button type="button" data-region="back" aria-pressed="false">Back</button>
+            <button type="button" data-region="glutes" aria-pressed="false">Glutes</button>
+            <button type="button" data-region="quads" aria-pressed="false">Quads</button>
+            <button type="button" data-region="hamstrings" aria-pressed="false">Hamstrings</button>
+            <button type="button" data-region="calves" aria-pressed="false">Calves</button>
+          </div>
+          <h3 id="anatomy-selection" role="status" hidden></h3>
+          <dl class="anatomy-availability">
+            <div><dt>Muscle workload</dt><dd>Unavailable. Requires verified workout sets and exercise-to-muscle mappings.</dd></div>
+            <div><dt>Readiness</dt><dd>Unavailable. Requires validated recovery inputs and personal baselines.</dd></div>
+          </dl>
+        </div>
+      </div>
     </section>
     <section aria-labelledby="photo-heading">
       <h2 id="photo-heading">Private photo comparison</h2>

@@ -72,6 +72,12 @@ try {
   await until("document.querySelector('#preview-before').hidden && !document.querySelector('#photo-before').files.length");
   assert.match(await evaluate("document.querySelector('#daily-status').textContent"), /0 observed days/);
   assert.equal(await evaluate("document.querySelectorAll('.metric-tile').length"), 4);
+  await until("document.querySelectorAll('#anatomy svg').length === 2");
+  await evaluate("document.querySelector('button[data-region=shoulders]').focus()");
+  await send("Input.dispatchKeyEvent", {type: "keyDown", key: " ", code: "Space", text: " ", windowsVirtualKeyCode: 32});
+  await send("Input.dispatchKeyEvent", {type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32});
+  await until("document.querySelector('button[data-region=shoulders]').getAttribute('aria-pressed') === 'true'");
+  assert.equal(await evaluate("document.querySelectorAll('#anatomy svg .is-selected[data-region=shoulders]').length"), 2);
   assert.equal(await evaluate("getComputedStyle(document.querySelector('.rail')).position"), "sticky");
   await evaluate("document.querySelector('#correlation-form button').click()");
   await until("document.querySelector('#correlation-status').textContent.includes('0 paired days')");
@@ -89,6 +95,9 @@ try {
   })()`);
   await until("document.querySelector('#status').textContent.includes('(24 rows).') && !document.querySelector('#fixture').disabled");
   assert.equal(await evaluate("document.querySelectorAll('#daily-chart svg circle').length"), 12);
+  assert.notEqual(await evaluate("getComputedStyle(document.querySelector('#daily-chart svg')).animationName"), "none");
+  await send("Emulation.setEmulatedMedia", {features: [{name: "prefers-reduced-motion", value: "reduce"}]});
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('#daily-chart svg')).animationName"), "none");
   assert.equal(await evaluate("document.querySelector('[data-metric=weight] .metric-value').textContent"), "66 kg");
   assert.equal(await evaluate("document.querySelectorAll('#daily-data tbody tr').length"), 12);
   assert.match(await evaluate("document.querySelector('#daily-export').getAttribute('href')"),
