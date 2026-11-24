@@ -1,0 +1,2 @@
+# Development and operations
+After audit document exact Fedora package prerequisites, pinned Python/R/JS dependencies, installation, migration, launch, test, backup and restore commands. Provide reproducible scripts and a localhost health endpoint. Use a separate test database and synthetic fixtures. Evaluate systemd user timers for background sync and backups; document enable/disable and failure logs. Do not claim commands work until executed. Maintain dependency lockfiles and license inventory.

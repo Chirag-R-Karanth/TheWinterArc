@@ -1,0 +1,13 @@
+# Release gates
+- [ ] Existing data preserved and migration tested on a copy.
+- [ ] Fedora installation and launch reproducible.
+- [ ] Offline access to imported data works.
+- [ ] At least one verified real source imported; repeat import does not duplicate.
+- [ ] Original records recoverable; provenance visible.
+- [ ] Data persists across restart; charts use actual database.
+- [ ] Missing values, units, source conflicts and sync errors visible.
+- [ ] Analytics verified against expected results; estimates labelled.
+- [ ] Backup and isolated restore verified.
+- [ ] No mandatory cloud/subscription, redundant logging or private data in Git.
+- [ ] Unsupported integrations explicitly blocked.
+- [ ] Tests and actual results recorded; documentation and launch commands current.

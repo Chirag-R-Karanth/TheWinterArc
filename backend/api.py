@@ -4,14 +4,18 @@ import os
 import re
 import sqlite3
 from contextlib import asynccontextmanager
+from datetime import date
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
-from .analytics import body_summary, cardio_summary, nutrition_summary, overview_summary, sleep_duration_summary
+from .analytics import (METRICS, body_summary, cardio_summary, daily_metric, nutrition_summary,
+                        overview_summary, sleep_duration_summary)
+from .correlation import StatisticsUnavailable, correlation
 from .providers import sources
 from .store import Store
 
@@ -98,6 +102,42 @@ def _timezone_key(timezone: str) -> str:
         return ZoneInfo(timezone).key
     except (ValueError, ZoneInfoNotFoundError) as error:
         raise HTTPException(422, "Use a valid IANA timezone, such as UTC or America/New_York") from error
+
+
+@app.get("/api/v1/metrics")
+def metrics():
+    return [{"id": key, "unit": unit, "aggregation": "daily_mean"} for key, unit in METRICS.items()]
+
+
+@app.get("/api/v1/metrics/{metric}/daily")
+def metric_daily(request: Request, metric: str, timezone: str = "UTC"):
+    if metric not in METRICS:
+        raise HTTPException(404, "Unknown metric")
+    return daily_metric(request.app.state.store.series(), metric, _timezone_key(timezone))
+
+
+class CorrelationRequest(BaseModel):
+    x: str
+    y: str
+    timezone: str = "UTC"
+    lag_days: int = Field(default=0, ge=-90, le=90)
+    rolling_days: int = Field(default=14, ge=3, le=366)
+    start_date: date | None = None
+    end_date: date | None = None
+
+
+@app.post("/api/v1/analysis/correlation")
+def analyze_correlation(request: Request, spec: CorrelationRequest):
+    if spec.x not in METRICS or spec.y not in METRICS:
+        raise HTTPException(422, "Choose two registered metrics")
+    zone = _timezone_key(spec.timezone)
+    try:
+        return correlation(request.app.state.store.series(), spec.x, spec.y, zone, spec.lag_days,
+                           spec.rolling_days, spec.start_date, spec.end_date)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+    except StatisticsUnavailable as error:
+        raise HTTPException(503, "R statistics engine unavailable. Verify Rscript is installed locally.") from error
 
 
 @app.get("/api/v1/body/summary")

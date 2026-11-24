@@ -1,6 +1,6 @@
 const api = "/api/v1";
 const get = (id) => document.getElementById(id);
-const controls = document.querySelectorAll("button, input");
+const controls = document.querySelectorAll("button, input, select");
 const example = JSON.stringify([
   {metric: "weight", value: 73, unit: "kg", observed_at: "2025-12-25T08:00:00Z"},
   {metric: "weight", value: 72.5, unit: "kg", observed_at: "2026-01-01T08:00:00Z"},
@@ -19,7 +19,8 @@ async function request(path, options) {
   const response = await fetch(`${api}${path}`, options);
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || `Request failed (${response.status})`);
+    throw new Error(Array.isArray(error.detail) ? error.detail.map(({msg}) => msg).join(". ")
+      : error.detail || `Request failed (${response.status})`);
   }
   return response.json();
 }
@@ -78,6 +79,150 @@ const nutrientLabels = {
   nutrition_fat: "Fat", nutrition_fibre: "Fibre", nutrition_sodium: "Sodium", nutrition_iron: "Iron",
 };
 
+const metricName = (id) => ({...metricLabels, ...nutrientLabels, sleep_duration: "Sleep duration",
+  heart_rate: "Heart rate"})[id] ?? id;
+
+function plot(id, label, points, curves = [], domain = []) {
+  const target = get(id);
+  target.replaceChildren();
+  if (!points.length) return;
+  const element = (name, attrs) => {
+    const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+    return node;
+  };
+  const scale = (values, start, end) => {
+    let min = Infinity, max = -Infinity;
+    for (const value of values) { min = Math.min(min, value); max = Math.max(max, value); }
+    const factor = Math.max(Math.abs(min), Math.abs(max)) || 1;
+    return {min, max, pixel: (value) => max === min ? (start + end) / 2
+      : start + (end - start) * ((value / factor - min / factor) / (max / factor - min / factor))};
+  };
+  const all = points.concat(...curves.map(({points}) => points));
+  const x = scale(domain.length ? domain : all.map((p) => p.x), 75, 595);
+  const y = scale(all.map((p) => p.y), 188, 16);
+  const svg = element("svg", {viewBox: "0 0 620 225", width: "100%", role: "img", "aria-label": label});
+  svg.append(element("path", {d: "M75 16V188H595", fill: "none", stroke: "currentColor"}));
+  for (const [px, py, text, anchor] of [[70, 16, y.max, "end"], [70, 188, y.min, "end"],
+    [75, 206, domain.length ? new Date(x.min).toISOString().slice(0, 10) : x.min, "start"],
+    [595, 206, domain.length ? new Date(x.max).toISOString().slice(0, 10) : x.max, "end"]]) {
+    const tick = element("text", {x: px, y: py, "text-anchor": anchor, "font-size": 12, fill: "currentColor"});
+    tick.textContent = typeof text === "number" ? Number(text.toPrecision(4)) : text;
+    svg.append(tick);
+  }
+  for (const curve of curves) {
+    svg.append(element("polyline", {points: curve.points.map((p) => `${x.pixel(p.x)},${y.pixel(p.y)}`).join(" "),
+      fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-dasharray": curve.dash}));
+  }
+  for (const p of points) svg.append(element("circle", {cx: x.pixel(p.x), cy: y.pixel(p.y), r: 3, fill: "currentColor"}));
+  target.append(svg);
+}
+
+let registry;
+let dailyRequest = 0;
+async function refreshDaily() {
+  const seq = ++dailyRequest;
+  const selected = get("daily-metric").value;
+  const query = new URLSearchParams({timezone: get("timezone").value.trim()});
+  get("daily-status").textContent = "Loading daily measurements…";
+  get("daily-chart").replaceChildren();
+  get("daily-data").replaceChildren();
+  let summary;
+  try {
+    summary = await request(`/metrics/${encodeURIComponent(selected)}/daily?${query}`);
+  } catch (error) {
+    if (seq === dailyRequest) throw error;
+    return;
+  }
+  if (seq !== dailyRequest) return;
+  const {daily, unit, timezone} = summary;
+  if (get("daily-metric").value !== selected || get("timezone").value.trim() !== timezone) return;
+  const observed = daily.filter(({value}) => value !== null && Number.isFinite(value));
+  const label = `${metricName(selected)} (${unit}), daily means in ${timezone}`;
+  get("daily-status").textContent = `${label}. ${observed.length} observed days; gaps are not filled.`;
+  plot("daily-chart", label, observed.map(({date, value}) => ({x: Date.parse(date), y: value})), [],
+    daily.length > 1 ? [Date.parse(daily[0].date), Date.parse(daily.at(-1).date)]
+      : daily.map(({date}) => Date.parse(date)));
+  table("daily-data", ["Date", label, "Valid samples", "Measurement IDs"], daily.map((p) =>
+    [p.date, measurement(p.value, unit), p.sample_count, p.measurement_ids.join(", ")]), "No supported measurements.");
+}
+
+async function refreshMetricRegistry() {
+  if (!registry) {
+    registry = await request("/metrics");
+    for (const [id, preferred] of [["daily-metric", "weight"], ["correlation-x", "weight"],
+      ["correlation-y", "sleep_duration"]]) {
+      get(id).replaceChildren(...registry.map(({id, unit}) => new Option(`${metricName(id)} (${unit})`, id)));
+      get(id).value = preferred;
+    }
+  }
+  await refreshDaily();
+}
+
+const statistic = (value) => value === null ? "Unavailable" : Number(value.toPrecision(5));
+function clearCorrelation(message) {
+  get("correlation-status").textContent = message;
+  for (const id of ["correlation-method", "correlation-plot", "correlation-rolling",
+    "correlation-pairs", "correlation-distributions"]) get(id).replaceChildren();
+}
+
+function renderCorrelation(result) {
+  const {paired_n: n, total_days: days, pearson, spearman, x_metric, y_metric, pairs, linear, loess} = result;
+  const x = `${metricName(x_metric)} (${result.x_unit})`, y = `${metricName(y_metric)} (${result.y_unit})`;
+  get("correlation-status").textContent = `${n} paired days of ${days}. X observed: ${result.x_observed_days}; ` +
+    `lag-aligned Y observed: ${result.y_observed_days}. Pearson: ${statistic(pearson)}. Spearman: ${statistic(spearman)}.`;
+  get("correlation-method").textContent = `${x} vs ${y}; ${result.start_date ?? "no dates"} to ` +
+    `${result.end_date ?? "no dates"} (${result.timezone}, X dates). ${result.lag_convention}, lag ${result.lag_days}. ` +
+    `${result.rolling_days}-calendar-day windows. ${result.engine}${result.engine_version ? ` ${result.engine_version}` : ""}, ` +
+    `method v${result.method_version}. ${result.limitations}`;
+  const curves = [];
+  if (linear) {
+    const ends = [Math.min(...pairs.map((p) => p.x)), Math.max(...pairs.map((p) => p.x))];
+    const points = ends.map((x) => ({x, y: linear.intercept + x * linear.slope}));
+    if (points.every(({y}) => Number.isFinite(y))) curves.push({points, dash: "6 4"});
+  }
+  if (loess.length) curves.push({points: loess, dash: "1 0"});
+  plot("correlation-plot", `Paired daily means: X ${x}, Y ${y}`, pairs, curves);
+  const caption = document.createElement("p");
+  caption.textContent = `X: ${x}; Y: ${y}. ` + (linear
+    ? `Linear fit (dashed): intercept ${statistic(linear.intercept)}, slope ${statistic(linear.slope)}. `
+    : "Linear fit unavailable. ") + (loess.length ? "LOESS (solid)." : "LOESS unavailable.");
+  get("correlation-plot").append(caption);
+  table("correlation-distributions", ["Metric", "Minimum", "Q1", "Median", "Q3", "Maximum"],
+    Object.entries(result.distributions).map(([axis, values]) => [axis === "x" ? x : y, ...values.map(statistic)]),
+    "No paired values.");
+  table("correlation-rolling", ["X window end", "Paired days", "Pearson", "Spearman"], result.rolling.map((p) =>
+    [p.end_date, p.paired_n, statistic(p.pearson), statistic(p.spearman)]), "No full calendar windows in range.");
+  table("correlation-pairs", ["X date", x, "X IDs", "Y date", y, "Y IDs"], pairs.map((p) =>
+    [p.x_date, p.x, p.x_measurement_ids.join(", "), p.y_date, p.y, p.y_measurement_ids.join(", ")]),
+    "No overlapping valid days at this lag.");
+}
+
+get("daily-metric").addEventListener("change", () => refreshDaily().catch((error) => {
+  get("daily-chart").replaceChildren();
+  get("daily-data").replaceChildren();
+  get("daily-status").textContent = error.message;
+}));
+get("correlation-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  controls.forEach((control) => { control.disabled = true; });
+  clearCorrelation("Analyzing local data…");
+  try {
+    renderCorrelation(await request("/analysis/correlation", {
+      method: "POST", headers: {"Content-Type": "application/json", "X-WinterArc-Local": "1"},
+      body: JSON.stringify({x: get("correlation-x").value, y: get("correlation-y").value,
+        timezone: get("timezone").value.trim(), lag_days: get("lag-days").valueAsNumber,
+        rolling_days: get("rolling-days").valueAsNumber, start_date: get("correlation-start").value || null,
+        end_date: get("correlation-end").value || null}),
+    }));
+  } catch (error) {
+    clearCorrelation(error.message);
+  } finally {
+    controls.forEach((control) => { control.disabled = false; });
+  }
+});
+get("correlation-form").addEventListener("input", () => clearCorrelation("Run analysis with the updated settings."));
+
 function renderNutrition({as_of_date: date, timezone, metrics}) {
   get("nutrition-context").textContent = date ? `Windows ending ${date} (${timezone}).`
     : `No supported nutrition totals in ${timezone}. Import the example fixture to see window coverage.`;
@@ -125,6 +270,12 @@ async function refreshPanel(id, path, render, emptyOnError, contextId) {
 async function refresh() {
   const query = new URLSearchParams({timezone: get("timezone").value.trim()});
   const results = await Promise.allSettled([
+    refreshMetricRegistry().catch((error) => {
+      get("daily-chart").replaceChildren();
+      get("daily-data").replaceChildren();
+      get("daily-status").textContent = error.message;
+      throw error;
+    }),
     refreshPanel("overview-windows", `/overview/summary?${query}`, renderOverview,
       "Overview unavailable.", "overview-context"),
     refreshPanel("cardio-windows", `/cardio/summary?${query}`, renderCardio,
@@ -161,6 +312,7 @@ async function refresh() {
 }
 
 async function run(payload) {
+  clearCorrelation("Select metrics and run an analysis.");
   controls.forEach((control) => { control.disabled = true; });
   get("status").textContent = payload === undefined ? "Loading local data…" : "Importing synthetic fixture…";
   let result = "";

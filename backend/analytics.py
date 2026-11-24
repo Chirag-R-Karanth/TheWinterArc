@@ -246,3 +246,27 @@ def overview_summary(rows, timezone="UTC"):
         "as_of_date": date.fromordinal(anchor).isoformat() if anchor is not None else None,
         "metrics": metrics,
     }
+
+
+METRICS = {
+    **{key: next(iter(units)) for key, units in _UNITS.items()},
+    "sleep_duration": "min",
+    **{key: spec[0] for key, spec in _NUTRITION.items()},
+    "heart_rate": "bpm",
+}
+
+
+def daily_metric(rows, metric, timezone):
+    """Reuse the published normalization and provenance of the core summaries."""
+    if metric in _UNITS:
+        entry = body_summary(rows, timezone)["metrics"][metric]
+    elif metric == "sleep_duration":
+        entry = sleep_duration_summary(rows, timezone)
+    elif metric in _NUTRITION:
+        entry = nutrition_summary(rows, timezone)["metrics"][metric]
+    elif metric == "heart_rate":
+        entry = cardio_summary(rows, timezone)["metrics"][metric]
+    else:
+        raise KeyError(metric)
+    return {"metric": metric, "unit": entry["unit"], "timezone": timezone,
+            "aggregation": "daily_mean", "method_version": 1, "daily": entry["daily"]}
