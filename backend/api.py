@@ -84,6 +84,16 @@ def styles():
     return FileResponse(FRONTEND / "styles.css", media_type="text/css")
 
 
+@app.get("/anatomy.js", include_in_schema=False)
+def anatomy_script():
+    return FileResponse(FRONTEND / "anatomy.js", media_type="text/javascript")
+
+
+@app.get("/anatomy.css", include_in_schema=False)
+def anatomy_styles():
+    return FileResponse(FRONTEND / "anatomy.css", media_type="text/css")
+
+
 @app.get("/api/v1/health")
 def health():
     return {"status": "ok", "mode": "fixture_only"}

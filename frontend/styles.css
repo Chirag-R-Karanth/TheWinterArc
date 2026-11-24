@@ -17,7 +17,7 @@ a { color: var(--accent); text-underline-offset: .2em; }
 .brand small { display: block; color: var(--muted); font-size: .57rem; letter-spacing: .1em; }
 .rail nav { display: grid; gap: .2rem; margin-top: 2rem; }
 .rail nav a { padding: .55rem .7rem; border-radius: .5rem; color: var(--muted); font-size: .9rem; text-decoration: none; }
-.rail nav a:hover, .rail nav a[aria-current] { background: var(--raised); color: var(--text); }
+.rail nav a:hover, .rail nav a:focus-visible, .rail nav a[aria-current] { background: var(--raised); color: var(--text); }
 .rail-note { padding: .65rem; margin-top: 1.5rem; border-top: 1px solid var(--edge); font-size: .75rem; }
 main { width: min(100%, 94rem); margin-inline: auto; padding: clamp(1rem, 3vw, 3rem); overflow-wrap: anywhere; }
 h1, h2, h3, p { margin: 0; }
@@ -74,4 +74,19 @@ th { color: var(--muted); }
   .metric-tile[data-metric="sleep_duration"] { --tone: #6446a2; }
   .metric-tile[data-metric="nutrition_energy"] { --tone: #216d4c; }
   .metric-tile[data-metric="heart_rate"] { --tone: #a63952; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .metric-tile:hover { border-color: var(--tone); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail nav a { transition: background-color 140ms ease-out, color 140ms ease-out; }
+  button, .metric-tile { transition: border-color 140ms ease-out; }
+  #daily-chart > svg, #correlation-plot > svg { animation: plot-enter 200ms ease-out; }
+
+  @keyframes plot-enter {
+    from { opacity: .75; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }

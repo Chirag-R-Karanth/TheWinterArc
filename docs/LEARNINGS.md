@@ -1,5 +1,9 @@
 # Engineering learnings
 
+### 2026-11-25 — Anatomy and motion
+
+Chromium verified that keyboard selection highlights a muscle group in both SVG views and that reduced motion disables chart animation. Base R reproduced the expected lagged fixture results.
+
 ### 2026-11-25 — Dashboard redesign
 
 - Chromium verified that the navigation changes from a desktop rail to a compact header and that the overview tiles update after a fixture import.

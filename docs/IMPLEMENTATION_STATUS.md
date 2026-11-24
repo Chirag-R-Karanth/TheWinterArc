@@ -21,6 +21,7 @@ Verify an actual phone sync using the [USB runbook](HEALTHCONNECT_USB.md). When 
 
 Follow the [V2 launch instructions](build-reports/2026-11-24.md#launch-and-reproduction) to start the loopback shell.
 ## Feature tracking
+- **R04 Anatomy:** Original front/back SVG with nine selectable regions. Workload and readiness remain unavailable pending validated inputs.
 - **Dashboard:** Latest measurements and daily trends lead the workspace, with responsive navigation and light/dark styling. See the [dashboard build report](build-reports/2026-11-25-dashboard.md).
 - **R11 Correlation:** Daily metric selection, signed calendar lag, rolling coefficients, Pearson/Spearman, linear and LOESS fits, and paired provenance. Results are exploratory and show sample counts; no inference or uncertainty intervals.
 - **R01 Overview:** Latest weight, sleep duration, energy and HR with adjacent weekly comparisons and coverage; link to provider discovery. Heatmap, configurable panels and actual sync status remain open.

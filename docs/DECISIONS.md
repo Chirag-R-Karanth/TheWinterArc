@@ -1,5 +1,9 @@
 # Architecture decision log
 
+### 2026-11-25 — Anatomy and motion
+
+Use original schematic SVGs and native selection buttons. Highlight selection only until the workout and baseline inputs are validated. Gate interface motion behind the system motion preference.
+
 ### 2026-11-25 — Dashboard hierarchy
 
 Put latest measured values and the daily chart ahead of import controls. Use the Lyfta references for graphite surfaces, compact metrics, and blue chart accents. Keep weekly detail and source records available through disclosure controls.
